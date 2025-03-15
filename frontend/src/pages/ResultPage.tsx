@@ -6,6 +6,7 @@ const Result = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const treeData = location.state?.treeData;
+  const apiResponse = location.state?.apiResponse;
 
   const formatTreeStructure = (root: TreeNode): string => {
     const structure: Record<number, number[]> = {};
@@ -51,10 +52,20 @@ const Result = () => {
           <h1 className="text-3xl font-bold text-gray-800">Tree Structure</h1>
         </div>
         
-        <div className="bg-white rounded-xl shadow-lg p-12">
-          <pre className="text-lg font-mono whitespace-pre-wrap bg-gray-50 p-6 rounded-lg border border-gray-200">
-            {treeData ? formatTreeStructure(treeData) : 'No data available'}
-          </pre>
+        <div className="bg-white rounded-xl shadow-lg p-12 space-y-6">
+          <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
+            <h2 className="text-xl font-semibold text-blue-800 mb-2">API Response:</h2>
+            <pre className="text-lg font-mono whitespace-pre-wrap">
+              {apiResponse ? JSON.stringify(apiResponse, null, 2) : 'No response available'}
+            </pre>
+          </div>
+
+          <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">Tree Structure:</h2>
+            <pre className="text-lg font-mono whitespace-pre-wrap">
+              {treeData ? formatTreeStructure(treeData) : 'No data available'}
+            </pre>
+          </div>
         </div>
       </div>
     </div>
