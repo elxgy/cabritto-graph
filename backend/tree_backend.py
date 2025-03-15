@@ -14,8 +14,7 @@ binary_tree_adj_list = {
     10: [None, None],
     11: [None, None],
     12: [None, None],
-    13: [14, None],
-    14: [None, None]
+    13: [None, None]
 }
 
 nary_tree_adj_list = {
@@ -50,14 +49,6 @@ def binary_tree_check(adj_list):
             return False
 
     return True
-
-def identify_tree(adj_list):
-    if binary_tree_check(adj_list):
-        return "Arvore binaria"
-    else:
-        return "Arvore regular"
-
-
 
 '''tmj chineses parte 2'''
 def get_binary_root(adj_list):
@@ -131,7 +122,6 @@ def build_nary_tree(adj_list, root_value):
 
 
 '''todo o codigo de plotar foi feito pelo deepseek tmj chines'''
-
 def plot_binary_tree(node, x, y, dx, dy, ax):
     if node is None:
         return
@@ -157,12 +147,7 @@ ax.set_xlim(-5, 5)
 ax.set_ylim(-5, 1)
 ax.axis('off')
 
-plot_binary_tree(root, x=0, y=0, dx=2, dy=1, ax=ax)
-
 '''VLW CHINESES 3!!!!!!'''
-
-
-'''
 def plot_nary_tree(node, x, y, dx, dy, ax):
     if node is None:
         return
@@ -183,18 +168,11 @@ def plot_nary_tree(node, x, y, dx, dy, ax):
             plot_nary_tree(child, x_child, y_child, dx / num_children, dy, ax)
 
 
-root = build_nary_tree(nary_tree_adj_list, get_nary_root(nary_tree_adj_list))
-
 fig, ax = plt.subplots(figsize=(8, 6))
 ax.set_xlim(-5, 5)
 ax.set_ylim(-5, 1)
 ax.axis('off')  # Hide axes
 
-# Plot the tree
-plot_nary_tree(root, x=0, y=0, dx=2, dy=1, ax=ax)
-'''
-
-plt.show()
 
 def binary_tree_height(adj_list, root):
     if root is None:
@@ -288,7 +266,25 @@ def postorder_traversal(adj_list, root):
     return result + [root]
 
 
-print(preorder_traversal(bst_adj_list, get_binary_root(bst_adj_list)))
-print(identify_tree(bst_adj_list))
-# print(tree_type(bst_adj_list, get_binary_root(bst_adj_list)))
-print(f"A altura da arvore é: {binary_tree_height(bst_adj_list, get_nary_root(bst_adj_list))}")
+def identify_tree(adj_list):
+    if binary_tree_check(adj_list):
+        get_binary_root(adj_list)
+        roota = build_binary_tree(adj_list, get_binary_root(adj_list))
+        plot_binary_tree(roota ,x=0, y=0, dx=2, dy=1, ax=ax)
+        plt.show()
+        height = binary_tree_height(adj_list, get_binary_root(adj_list))
+        tType = tree_type(adj_list, get_binary_root(adj_list))
+        return "Arvore binaria", f"A altura eh {height}", f"O tipo eh {tType}"
+
+    else:
+        get_nary_root(adj_list)
+        rootn = build_nary_tree(adj_list, get_nary_root(adj_list))
+        plot_nary_tree(rootn, x=0, y=0, dx=2, dy=1, ax=ax)
+        plt.show()
+        height = nary_tree_height(adj_list, get_nary_root(adj_list))
+        tType = tree_type(adj_list, get_nary_root(adj_list))
+        return "Arvore regular", f"A altura eh {height}", f"O tipo eh {tType}"
+
+
+print(preorder_traversal(binary_tree_adj_list, get_binary_root(binary_tree_adj_list)))
+print(identify_tree(binary_tree_adj_list))
