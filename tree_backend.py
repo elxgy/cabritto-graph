@@ -1,7 +1,5 @@
-import numpy as np
 import matplotlib.pyplot as plt
 from collections import deque
-from matplotlib.pyplot import legend
 
 binary_tree_adj_list = {
     1: [2, 3],
@@ -44,6 +42,22 @@ bst_adj_list = {
     7: [None, None],
     13: [None, None]
 }
+
+def binary_tree_check(adj_list):
+    for node, children in adj_list.items():
+
+        if len(children) > 2: #check if any node has more than 2 children
+            return False
+
+    return True
+
+def identify_tree(adj_list):
+    if binary_tree_check(adj_list):
+        return "Arvore binaria"
+    else:
+        return "Arvore regular"
+
+
 
 '''tmj chineses parte 2'''
 def get_binary_root(adj_list):
@@ -187,18 +201,18 @@ def binary_tree_height(adj_list, root):
     left_child, right_child = adj_list.get(root, [None, None])
 
 
-    left_height = binary_tree_height(adj_list, left_child)
-    right_height = binary_tree_height(adj_list, right_child)
+    left_height = binary_tree_height(adj_list, left_child) #passes left side to the function
+    right_height = binary_tree_height(adj_list, right_child) #passes right side to the function
 
 
-    return max(left_height, right_height) + 1
+    return max(left_height, right_height) + 1 #check which side has the bigger value and return
 
 def nary_tree_height(adj_list, root):
     if root is None:
         return -1
     height = -1
     for child in adj_list.get(root, []):
-        height = max(height, nary_tree_height(adj_list, child))
+        height = max(height, nary_tree_height(adj_list, child)) #passes through all node with children and get the path with highest length
 
     return height + 1
 
@@ -256,5 +270,6 @@ def tree_type(adj_list, root):
         return "Arvore binaria incompleta"
 
 
-print(tree_type(bst_adj_list, get_binary_root(bst_adj_list)))
+print(identify_tree(nary_tree_adj_list))
+# print(tree_type(bst_adj_list, get_binary_root(bst_adj_list)))
 print(f"A altura da arvore é: {nary_tree_height(nary_tree_adj_list, get_nary_root(nary_tree_adj_list))}")
