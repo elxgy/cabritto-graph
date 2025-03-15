@@ -268,22 +268,24 @@ def postorder_traversal(adj_list, root):
 
 def identify_tree(adj_list):
     if binary_tree_check(adj_list):
-        get_binary_root(adj_list)
-        roota = build_binary_tree(adj_list, get_binary_root(adj_list))
-        plot_binary_tree(roota ,x=0, y=0, dx=2, dy=1, ax=ax)
-        plt.show()
-        height = binary_tree_height(adj_list, get_binary_root(adj_list))
-        tType = tree_type(adj_list, get_binary_root(adj_list))
-        return "Arvore binaria", f"A altura eh {height}", f"O tipo eh {tType}"
-
+        root = get_binary_root(adj_list)
+        height = binary_tree_height(adj_list, root)
+        tType = tree_type(adj_list, root)
+        return {
+            "type": "Arvore binaria",
+            "height": height,
+            "classification": tType,
+            "root": root
+        }
     else:
-        get_nary_root(adj_list)
-        rootn = build_nary_tree(adj_list, get_nary_root(adj_list))
-        plot_nary_tree(rootn, x=0, y=0, dx=2, dy=1, ax=ax)
-        plt.show()
-        height = nary_tree_height(adj_list, get_nary_root(adj_list))
-        tType = tree_type(adj_list, get_nary_root(adj_list))
-        return "Arvore regular", f"A altura eh {height}", f"O tipo eh {tType}"
+        root = get_nary_root(adj_list)
+        height = nary_tree_height(adj_list, root)
+        tType = "Arvore regular"
+        return {
+            "type": tType,
+            "height": height,
+            "root": root
+        }
 
 
 print(preorder_traversal(binary_tree_adj_list, get_binary_root(binary_tree_adj_list)))

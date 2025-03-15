@@ -1,22 +1,23 @@
-import { Pencil, Plus } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Pencil } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
 interface TreeNodeType {
   id: string;
   number: number;
   children: TreeNodeType[];
+  position?: 'left' | 'right';
 }
 
 interface Props {
   node: TreeNodeType;
-  onAddChild: (parentId: string, number: number) => void;
+  onAddChild: (parentId: string, number: number, position: 'left' | 'right') => void;
   onNumberChange?: (nodeId: string, number: number) => void;
   isRoot?: boolean;
 }
 
 export const TreeNode: React.FC<Props> = ({ node, onAddChild, onNumberChange, isRoot = false }) => {
   const [newNumber, setNewNumber] = useState('');
-  const [activeGhost, setActiveGhost] = useState<boolean>(false);
+  const [activeGhost, setActiveGhost] = useState<'left' | 'right' | null>(null);
   const [isEditing, setIsEditing] = useState(isRoot && node.number === 0);
   const [editNumber, setEditNumber] = useState(node.number.toString());
 
@@ -24,12 +25,12 @@ export const TreeNode: React.FC<Props> = ({ node, onAddChild, onNumberChange, is
     setEditNumber(node.number.toString());
   }, [node.number]);
 
-  const handleNumberSubmit = () => {
+  const handleNumberSubmit = (position: 'left' | 'right') => {
     const num = parseInt(newNumber);
     if (!isNaN(num)) {
-      onAddChild(node.id, num);
+      onAddChild(node.id, num, position);
       setNewNumber('');
-      setActiveGhost(false);
+      setActiveGhost(null);
     }
   };
 
@@ -40,6 +41,9 @@ export const TreeNode: React.FC<Props> = ({ node, onAddChild, onNumberChange, is
       setIsEditing(false);
     }
   };
+
+  const leftChild = node.children.find(child => child.position === 'left');
+  const rightChild = node.children.find(child => child.position === 'right');
 
   return (
     <div className="relative flex flex-col items-center">
@@ -83,32 +87,67 @@ export const TreeNode: React.FC<Props> = ({ node, onAddChild, onNumberChange, is
           </div>
         </div>
 
-        {/* Ghost Node */}
-        <div className="relative mt-4 flex flex-col items-center">
-          <div
-            className={`w-12 h-12 rounded-full border-2 border-dashed 
-              ${activeGhost ? 'border-blue-500 bg-blue-50' : 'border-gray-300 bg-white'} 
-              cursor-pointer transition-all duration-200 flex items-center justify-center`}
-            onClick={() => setActiveGhost(!activeGhost)}
-          >
-            {activeGhost ? (
-              <input
-                type="number"
-                className="w-8 text-center bg-transparent outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                value={newNumber}
-                onChange={(e) => setNewNumber(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleNumberSubmit();
-                  }
-                }}
-                autoFocus
-              />
-            ) : (
-              <Plus className="w-5 h-5 text-gray-400" />
-            )}
-          </div>
-          <div className="absolute top-[-1rem] left-1/2 -translate-x-1/2 w-0.5 h-4 bg-gray-400" />
+        {/* Ghost Nodes */}
+        <div className="relative mt-4 flex gap-8">
+          {/* Left Ghost Node */}
+          {!leftChild && (
+            <div className="relative flex flex-col items-center">
+              <div
+                className={`w-12 h-12 rounded-full border-2 border-dashed 
+                  ${activeGhost === 'left' ? 'border-blue-500 bg-blue-50' : 'border-gray-300 bg-white'} 
+                  cursor-pointer transition-all duration-200 flex items-center justify-center`}
+                onClick={() => setActiveGhost(activeGhost === 'left' ? null : 'left')}
+              >
+                {activeGhost === 'left' ? (
+                  <input
+                    type="number"
+                    className="w-8 text-center bg-transparent outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    value={newNumber}
+                    onChange={(e) => setNewNumber(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleNumberSubmit('left');
+                      }
+                    }}
+                    autoFocus
+                  />
+                ) : (
+                  <ArrowLeft className="w-5 h-5 text-gray-400" />
+                )}
+              </div>
+              <div className="absolute top-[-1rem] left-1/2 -translate-x-1/2 w-0.5 h-4 bg-gray-400" />
+            </div>
+          )}
+
+          {/* Right Ghost Node */}
+          {!rightChild && (
+            <div className="relative flex flex-col items-center">
+              <div
+                className={`w-12 h-12 rounded-full border-2 border-dashed 
+                  ${activeGhost === 'right' ? 'border-blue-500 bg-blue-50' : 'border-gray-300 bg-white'} 
+                  cursor-pointer transition-all duration-200 flex items-center justify-center`}
+                onClick={() => setActiveGhost(activeGhost === 'right' ? null : 'right')}
+              >
+                {activeGhost === 'right' ? (
+                  <input
+                    type="number"
+                    className="w-8 text-center bg-transparent outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    value={newNumber}
+                    onChange={(e) => setNewNumber(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleNumberSubmit('right');
+                      }
+                    }}
+                    autoFocus
+                  />
+                ) : (
+                  <ArrowRight className="w-5 h-5 text-gray-400" />
+                )}
+              </div>
+              <div className="absolute top-[-1rem] left-1/2 -translate-x-1/2 w-0.5 h-4 bg-gray-400" />
+            </div>
+          )}
         </div>
       </div>
 

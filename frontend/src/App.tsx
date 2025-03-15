@@ -1,8 +1,10 @@
 import { Eye, Share2 } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { sendTreeData } from '../services/api';
 import { TreeNode as TreeNodeComponent } from './components/TreeNode';
 import { TreeNode } from './types';
+
 
 const App = () => {
   const navigate = useNavigate();
@@ -13,9 +15,26 @@ const App = () => {
     children: []
   });
 
-  const handleResultPage = () => {
-    navigate('/result', { state: { treeData: tree } });
-  };
+  
+
+  const handleResultPage = async () => {
+    
+    try {
+
+        // Send data to API
+        const response = await sendTreeData(tree);
+
+        // Navigation
+        console.log('Navigating to result page with:', {
+            treeData: tree,
+            apiResponse: response
+        });
+        
+        navigate('/result', { state: { treeData: tree, apiResponse: response } });
+    } catch (error) {
+        console.log(error)
+    }
+};
 
   const handleAddChild = (parentId: string, number: number) => {
     const newNode: TreeNode = {
