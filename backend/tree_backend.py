@@ -131,7 +131,7 @@ def build_nary_tree(adj_list, root_value):
 
 
 '''todo o codigo de plotar foi feito pelo deepseek tmj chines'''
-'''
+
 def plot_binary_tree(node, x, y, dx, dy, ax):
     if node is None:
         return
@@ -158,9 +158,11 @@ ax.set_ylim(-5, 1)
 ax.axis('off')
 
 plot_binary_tree(root, x=0, y=0, dx=2, dy=1, ax=ax)
-'''
 
 '''VLW CHINESES 3!!!!!!'''
+
+
+'''
 def plot_nary_tree(node, x, y, dx, dy, ax):
     if node is None:
         return
@@ -190,7 +192,7 @@ ax.axis('off')  # Hide axes
 
 # Plot the tree
 plot_nary_tree(root, x=0, y=0, dx=2, dy=1, ax=ax)
-
+'''
 
 plt.show()
 
@@ -269,7 +271,24 @@ def tree_type(adj_list, root):
     else:
         return "Arvore binaria incompleta"
 
+def preorder_traversal(adj_list, root):
+    if root is None:
+        return []
+    result = [root]
+    for child in adj_list.get(root, []):
+        result.extend(preorder_traversal(adj_list, child))
+    return result
 
-print(identify_tree(nary_tree_adj_list))
+def postorder_traversal(adj_list, root):
+    if root is None:
+        return []
+    result = []
+    for child in adj_list.get(root, []):
+        result.extend(postorder_traversal(adj_list, child))
+    return result + [root]
+
+
+print(preorder_traversal(bst_adj_list, get_binary_root(bst_adj_list)))
+print(identify_tree(bst_adj_list))
 # print(tree_type(bst_adj_list, get_binary_root(bst_adj_list)))
-print(f"A altura da arvore é: {nary_tree_height(nary_tree_adj_list, get_nary_root(nary_tree_adj_list))}")
+print(f"A altura da arvore é: {binary_tree_height(bst_adj_list, get_nary_root(bst_adj_list))}")
