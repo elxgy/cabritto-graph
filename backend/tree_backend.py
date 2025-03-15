@@ -52,9 +52,15 @@ full_binary_tree_adj_list = {
     7: []       # Node 7 is a leaf (no children)
 }
 
-aa_binary_tree_adj_list = {
-    1: [2],
-    2: []
+complete_binary_tree_adj_list = {
+    1: [2, 3],  # Node 1 has children 2 and 3
+    2: [4, 5],  # Node 2 has children 4 and 5
+    3: [6, 7],  # Node 3 has children 6 and 7
+    4: [8],     # Node 4 has child 8 (leftmost)
+    5: [],      # Node 5 is a leaf (no children)
+    6: [],      # Node 6 is a leaf (no children)
+    7: [],      # Node 7 is a leaf (no children)
+    8: []       # Node 8 is a leaf (no children)
 }
 
 
@@ -240,16 +246,9 @@ def complete_binary_tree(adj_list, root):
 
     while queue:
         node = queue.popleft()
-        children = adj_list.get(root, [])
+        children = adj_list.get(node, [])
 
         left_child = children[0] if len(children) > 0 else None
-        if left_child:
-            if has_null_child:
-                return False
-            queue.append(left_child)
-        else:
-            has_null_child = True
-
         if left_child:
             if has_null_child:
                 return False
@@ -320,4 +319,4 @@ def identify_tree(adj_list):
         return "Arvore regular", f"A altura é {height}", f"O tipo é {tType}", preOrder, postOrder
 
 
-print(identify_tree(bst_adj_list))
+print(identify_tree(complete_binary_tree_adj_list))
