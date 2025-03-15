@@ -1,13 +1,13 @@
 version: '3.8'
 services:
-  # api:
-  #   build:
-  #     context: ./backend
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "5000:5000"
-  #   environment:
-  #     - PYTHONPATH=/app
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - PYTHONPATH=/app
 
   frontend:
     build:
@@ -15,8 +15,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5173:5173"
-    # depends_on:
-    #   - api
+    depends_on:
+      - api
     volumes:
       - ./frontend:/app
       - /app/node_modules
