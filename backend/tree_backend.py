@@ -5,16 +5,16 @@ binary_tree_adj_list = {
     1: [2, 3],
     2: [4, 5],
     3: [None, 6],
-    4: [7, None],
+    4: [7],
     5: [None, 8],
     6: [None, 9],
     7: [10, 11],
-    8: [12, None],
-    9: [13, None],
-    10: [None, None],
-    11: [None, None],
-    12: [None, None],
-    13: [None, None]
+    8: [12],
+    9: [13],
+    10: [],
+    11: [],
+    12: [],
+    13: []
 }
 
 nary_tree_adj_list = {
@@ -34,13 +34,30 @@ bst_adj_list = {
     8: [3, 10],
     3: [1, 6],
     10: [None, 14],
-    1: [None, None],
+    1: [],
     6: [4, 7],
-    14: [13, None],
-    4: [None, None],
-    7: [None, None],
-    13: [None, None]
+    14: [13],
+    4: [],
+    7: [],
+    13: []
 }
+
+full_binary_tree_adj_list = {
+    1: [2, 3],  # Node 1 has children 2 and 3
+    2: [4, 5],  # Node 2 has children 4 and 5
+    3: [6, 7],  # Node 3 has children 6 and 7
+    4: [],      # Node 4 is a leaf (no children)
+    5: [],      # Node 5 is a leaf (no children)
+    6: [],      # Node 6 is a leaf (no children)
+    7: []       # Node 7 is a leaf (no children)
+}
+
+aa_binary_tree_adj_list = {
+    1: [2],
+    2: []
+}
+
+
 
 def binary_tree_check(adj_list):
     for node, children in adj_list.items():
@@ -142,10 +159,10 @@ def plot_binary_tree(node, x, y, dx, dy, ax):
 
 root = build_binary_tree(bst_adj_list, get_binary_root(bst_adj_list))
 
-fig, ax = plt.subplots(figsize=(10, 8))
+fig, ax = plt.subplots(figsize=(16, 12))  # Increase figsize for a bigger plot
 ax.set_xlim(-5, 5)
 ax.set_ylim(-5, 1)
-ax.axis('off')
+ax.axis('off')  # Hide axes
 
 '''VLW CHINESES 3!!!!!!'''
 def plot_nary_tree(node, x, y, dx, dy, ax):
@@ -168,7 +185,7 @@ def plot_nary_tree(node, x, y, dx, dy, ax):
             plot_nary_tree(child, x_child, y_child, dx / num_children, dy, ax)
 
 
-fig, ax = plt.subplots(figsize=(8, 6))
+fig, ax = plt.subplots(figsize=(16, 12))  # Increase figsize for a bigger plot
 ax.set_xlim(-5, 5)
 ax.set_ylim(-5, 1)
 ax.axis('off')  # Hide axes
@@ -178,7 +195,10 @@ def binary_tree_height(adj_list, root):
     if root is None:
         return -1
 
-    left_child, right_child = adj_list.get(root, [None, None])
+    children = adj_list.get(root, [])
+
+    left_child = children[0] if len(children) > 0 else None
+    right_child = children[1] if len(children) > 1 else None
 
 
     left_height = binary_tree_height(adj_list, left_child) #passes left side to the function
@@ -200,7 +220,11 @@ def full_binary_tree(adj_list, root):
     if root is None:
         return True
 
-    left_child, right_child = adj_list.get(root, [None, None])
+    children = adj_list.get(root, [])
+
+    left_child = children[0] if len(children) > 0 else None
+    right_child = children[1] if len(children) > 1 else None
+
 
     if(left_child is None and right_child is not None) or (left_child is not None and right_child is None):
         return False
@@ -216,24 +240,28 @@ def complete_binary_tree(adj_list, root):
 
     while queue:
         node = queue.popleft()
-        left_child, right_child = adj_list.get(node, [None, None])
+        children = adj_list.get(root, [])
+
+        left_child = children[0] if len(children) > 0 else None
+        if left_child:
+            if has_null_child:
+                return False
+            queue.append(left_child)
+        else:
+            has_null_child = True
 
         if left_child:
             if has_null_child:
                 return False
-
             queue.append(left_child)
-
         else:
             has_null_child = True
 
-
+        right_child = children[1] if len(children) > 1 else None
         if right_child:
             if has_null_child:
                 return False
-
             queue.append(right_child)
-
         else:
             has_null_child = True
 
@@ -241,13 +269,13 @@ def complete_binary_tree(adj_list, root):
 
 def tree_type(adj_list, root):
     if full_binary_tree(adj_list, root):
-        return "Arvore binaria cheia"
+        return "Arvore cheia"
 
     elif complete_binary_tree(adj_list, root):
-        return "Arvore binaria completa"
+        return "Arvore completa"
 
     else:
-        return "Arvore binaria incompleta"
+        return "Arvore incompleta"
 
 def preorder_traversal(adj_list, root):
     if root is None:
@@ -268,25 +296,28 @@ def postorder_traversal(adj_list, root):
 
 def identify_tree(adj_list):
     if binary_tree_check(adj_list):
-        root = get_binary_root(adj_list)
-        height = binary_tree_height(adj_list, root)
-        tType = tree_type(adj_list, root)
-        return {
-            "type": "Arvore binaria",
-            "height": height,
-            "classification": tType,
-            "root": root
-        }
+        get_binary_root(adj_list)
+        roota = build_binary_tree(adj_list, get_binary_root(adj_list))
+        plot_binary_tree(roota ,x=0, y=0, dx=2, dy=1, ax=ax)
+        plt.savefig('bin_tree.png', dpi=300, bbox_inches='tight')
+        plt.show()
+        height = binary_tree_height(adj_list, get_binary_root(adj_list))
+        tType = tree_type(adj_list, get_binary_root(adj_list))
+        postOrder = postorder_traversal(adj_list, get_binary_root(adj_list))
+        preOrder = preorder_traversal(adj_list, get_binary_root(adj_list))
+        return "Arvore binaria", f"A altura é {height}", f"O tipo é {tType}", preOrder, postOrder
+
     else:
-        root = get_nary_root(adj_list)
-        height = nary_tree_height(adj_list, root)
-        tType = "Arvore regular"
-        return {
-            "type": tType,
-            "height": height,
-            "root": root
-        }
+        get_nary_root(adj_list)
+        rootn = build_nary_tree(adj_list, get_nary_root(adj_list))
+        plot_nary_tree(rootn, x=0, y=0, dx=2, dy=1, ax=ax)
+        plt.savefig('nary_tree.png', dpi=300, bbox_inches='tight')
+        plt.show()
+        height = nary_tree_height(adj_list, get_nary_root(adj_list))
+        tType = tree_type(adj_list, get_nary_root(adj_list))
+        postOrder = postorder_traversal(adj_list, get_nary_root(adj_list))
+        preOrder = preorder_traversal(adj_list, get_nary_root(adj_list))
+        return "Arvore regular", f"A altura é {height}", f"O tipo é {tType}", preOrder, postOrder
 
 
-print(preorder_traversal(binary_tree_adj_list, get_binary_root(binary_tree_adj_list)))
-print(identify_tree(binary_tree_adj_list))
+print(identify_tree(bst_adj_list))
