@@ -319,4 +319,4 @@ def identify_tree(adj_list):
         return "Arvore regular", f"A altura é {height}", f"O tipo é {tType}", preOrder, postOrder
 
 
-print(identify_tree(complete_binary_tree_adj_list))
+print(identify_tree(complete_binary_tree_adj_list)) #aa
