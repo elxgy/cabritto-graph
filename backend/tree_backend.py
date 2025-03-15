@@ -292,6 +292,21 @@ def postorder_traversal(adj_list, root):
         result.extend(postorder_traversal(adj_list, child))
     return result + [root]
 
+def inorder_traversal(adj_list, root):
+    if root is None:
+        return []
+    result = []
+    children = adj_list.get(root, [])
+
+    if len(children) > 0:
+        result.extend(inorder_traversal(adj_list, children[0]))
+
+    result.append(root)
+
+    if len(children) > 1:
+        result.extend(inorder_traversal(adj_list, children[1]))
+
+    return result
 
 def identify_tree(adj_list):
     if binary_tree_check(adj_list):
@@ -304,7 +319,8 @@ def identify_tree(adj_list):
         tType = tree_type(adj_list, get_binary_root(adj_list))
         postOrder = postorder_traversal(adj_list, get_binary_root(adj_list))
         preOrder = preorder_traversal(adj_list, get_binary_root(adj_list))
-        return "Arvore binaria", f"A altura é {height}", f"O tipo é {tType}", preOrder, postOrder
+        inOrder = inorder_traversal(adj_list, get_binary_root(adj_list))
+        return "Arvore binaria", f"A altura é {height}", f"O tipo é {tType}", preOrder, postOrder, inOrder
 
     else:
         get_nary_root(adj_list)
