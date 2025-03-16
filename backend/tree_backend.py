@@ -1,69 +1,6 @@
 import matplotlib.pyplot as plt
 from collections import deque
 
-binary_tree_adj_list = {
-    1: [2, 3],
-    2: [4, 5],
-    3: [None, 6],
-    4: [7],
-    5: [None, 8],
-    6: [None, 9],
-    7: [10, 11],
-    8: [12],
-    9: [13],
-    10: [],
-    11: [],
-    12: [],
-    13: []
-}
-
-nary_tree_adj_list = {
-    1: [2, 3, 4],
-    2: [5, 6],
-    3: [],
-    4: [7],
-    5: [8, 9],
-    6: [10],
-    7: [],
-    8: [],
-    9: [],
-    10: []
-}
-
-bst_adj_list = {
-    8: [3, 10],
-    3: [1, 6],
-    10: [None, 14],
-    1: [],
-    6: [4, 7],
-    14: [13],
-    4: [],
-    7: [],
-    13: []
-}
-
-full_binary_tree_adj_list = {
-    1: [2, 3],  # Node 1 has children 2 and 3
-    2: [4, 5],  # Node 2 has children 4 and 5
-    3: [6, 7],  # Node 3 has children 6 and 7
-    4: [],      # Node 4 is a leaf (no children)
-    5: [],      # Node 5 is a leaf (no children)
-    6: [],      # Node 6 is a leaf (no children)
-    7: []       # Node 7 is a leaf (no children)
-}
-
-complete_binary_tree_adj_list = {
-    1: [2, 3],  # Node 1 has children 2 and 3
-    2: [4, 5],  # Node 2 has children 4 and 5
-    3: [6, 7],  # Node 3 has children 6 and 7
-    4: [8],     # Node 4 has child 8 (leftmost)
-    5: [],      # Node 5 is a leaf (no children)
-    6: [],      # Node 6 is a leaf (no children)
-    7: [],      # Node 7 is a leaf (no children)
-    8: []       # Node 8 is a leaf (no children)
-}
-
-
 
 def binary_tree_check(adj_list):
     for node, children in adj_list.items():
@@ -109,22 +46,42 @@ class BinaryTreeNode:
         self.right = right
 
 def build_binary_tree(adj_list, root_value):
-    if not root_value:
+    if not root_value or root_value not in adj_list:
         return None
 
     # Create the root node
     root = BinaryTreeNode(root_value)
-
-    # Get the children of the current node
     children = adj_list.get(root_value, [])
 
-    # Assign left and right children (binary tree has at most 2 children)
+    # Process children based on their position in the array
     if len(children) > 0:
-        root.left = build_binary_tree(adj_list, children[0])
+        # Left child (index 0)
+        if children[0] is not None:
+            root.left = build_binary_tree(adj_list, children[0])
+    
     if len(children) > 1:
-        root.right = build_binary_tree(adj_list, children[1])
+        # Right child (index 1)
+        if children[1] is not None:
+            root.right = build_binary_tree(adj_list, children[1])
 
     return root
+
+def plot_binary_tree(node, x, y, dx, dy, ax):
+    if node is None:
+        return
+
+    # Plot current node
+    ax.text(x, y, str(node.value), fontsize=12, ha='center', va='center',
+            bbox=dict(facecolor='white', edgecolor='black', boxstyle='circle'))
+
+    # Plot connections and children
+    if node.left:
+        ax.plot([x, x - dx], [y, y - dy], 'k-')
+        plot_binary_tree(node.left, x - dx, y - dy, dx / 2, dy, ax)
+
+    if node.right:
+        ax.plot([x, x + dx], [y, y - dy], 'k-')
+        plot_binary_tree(node.right, x + dx, y - dy, dx / 2, dy, ax)
 
 class NaryTreeNode:
     def __init__(self, value=0, children=None):
@@ -163,7 +120,6 @@ def plot_binary_tree(node, x, y, dx, dy, ax):
         ax.plot([x, x + dx], [y, y - dy], 'k-')  # Draw a line to the right child
         plot_binary_tree(node.right, x + dx, y - dy, dx / 2, dy, ax)  # Recur for the right subtree
 
-root = build_binary_tree(bst_adj_list, get_binary_root(bst_adj_list))
 
 fig, ax = plt.subplots(figsize=(16, 12))  # Increase figsize for a bigger plot
 ax.set_xlim(-5, 5)
@@ -309,30 +265,89 @@ def inorder_traversal(adj_list, root):
     return result
 
 def identify_tree(adj_list):
-    if binary_tree_check(adj_list):
-        get_binary_root(adj_list)
-        roota = build_binary_tree(adj_list, get_binary_root(adj_list))
-        plot_binary_tree(roota ,x=0, y=0, dx=2, dy=1, ax=ax)
-        plt.savefig('bin_tree.png', dpi=300, bbox_inches='tight')
-        plt.show()
-        height = binary_tree_height(adj_list, get_binary_root(adj_list))
-        tType = tree_type(adj_list, get_binary_root(adj_list))
-        postOrder = postorder_traversal(adj_list, get_binary_root(adj_list))
-        preOrder = preorder_traversal(adj_list, get_binary_root(adj_list))
-        inOrder = inorder_traversal(adj_list, get_binary_root(adj_list))
-        return "Arvore binaria", f"A altura é {height}", f"O tipo é {tType}", preOrder, postOrder, inOrder
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    import os
+    from copy import deepcopy
 
-    else:
-        get_nary_root(adj_list)
-        rootn = build_nary_tree(adj_list, get_nary_root(adj_list))
-        plot_nary_tree(rootn, x=0, y=0, dx=2, dy=1, ax=ax)
-        plt.savefig('nary_tree.png', dpi=300, bbox_inches='tight')
-        plt.show()
-        height = nary_tree_height(adj_list, get_nary_root(adj_list))
-        tType = tree_type(adj_list, get_nary_root(adj_list))
-        postOrder = postorder_traversal(adj_list, get_nary_root(adj_list))
-        preOrder = preorder_traversal(adj_list, get_nary_root(adj_list))
-        return "Arvore regular", f"A altura é {height}", f"O tipo é {tType}", preOrder, postOrder
+    images_dir = os.path.join(os.path.dirname(__file__), 'static', 'images')
+    os.makedirs(images_dir, exist_ok=True)
 
+    fig, ax = plt.subplots(figsize=(16, 12))
+    ax.set_xlim(-5, 5)
+    ax.set_ylim(-5, 1)
+    ax.axis('off')
 
-print(identify_tree(complete_binary_tree_adj_list)) #aa
+    try:
+        working_adj_list = deepcopy(adj_list)
+
+        if binary_tree_check(working_adj_list):
+            root_value = get_binary_root(working_adj_list)
+            if root_value is not None:
+                missing_nodes = set()
+                for node, children in working_adj_list.items():
+                    for child in children:
+                        if child is not None and child not in working_adj_list:
+                            missing_nodes.add(child)
+                
+                for node in missing_nodes:
+                    working_adj_list[node] = []
+
+                root_node = build_binary_tree(working_adj_list, root_value)
+                if root_node:
+                    plot_binary_tree(root_node, x=0, y=0, dx=2, dy=1, ax=ax)
+                    
+                    image_path = os.path.join(images_dir, 'bin_tree.png')
+                    plt.savefig(image_path, dpi=300, bbox_inches='tight')
+                
+                height = binary_tree_height(working_adj_list, root_value)
+                tree_type_result = tree_type(working_adj_list, root_value)
+                post_order = postorder_traversal(working_adj_list, root_value)
+                pre_order = preorder_traversal(working_adj_list, root_value)
+                in_order = inorder_traversal(working_adj_list, root_value)
+                
+                result = {
+                    "image": image_path,
+                    "type": "Arvore binaria",
+                    "height": f"A altura é {height}",
+                    "tree_type": f"O tipo é {tree_type_result}",
+                    "pre_order": pre_order,
+                    "post_order": post_order,
+                    "in_order": in_order
+                }
+        else:
+            root_value = get_nary_root(working_adj_list)
+            if root_value is not None:
+                missing_nodes = set()
+                for node, children in working_adj_list.items():
+                    for child in children:
+                        if child is not None and child not in working_adj_list:
+                            missing_nodes.add(child)
+                
+                for node in missing_nodes:
+                    working_adj_list[node] = []
+
+                root_node = build_nary_tree(working_adj_list, root_value)
+                plot_nary_tree(root_node, x=0, y=0, dx=2, dy=1, ax=ax)
+                
+                image_path = os.path.join(images_dir, 'nary_tree.png')
+                plt.savefig(image_path, dpi=300, bbox_inches='tight')
+                
+                height = nary_tree_height(working_adj_list, root_value)
+                tree_type_result = tree_type(working_adj_list, root_value)
+                post_order = postorder_traversal(working_adj_list, root_value)
+                pre_order = preorder_traversal(working_adj_list, root_value)
+                
+                result = {
+                    "image": image_path,
+                    "type": "Arvore regular",
+                    "height": f"A altura é {height}",
+                    "tree_type": f"O tipo é {tree_type_result}",
+                    "pre_order": pre_order,
+                    "post_order": post_order
+                }
+    finally:
+        plt.close(fig)
+    
+    return result
