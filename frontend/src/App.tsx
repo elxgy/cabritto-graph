@@ -3,8 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { sendTreeData } from '../services/api';
 import { TreeNode as TreeNodeComponent } from './components/TreeNode';
-import { TreeNode } from './types';
-
+import { APITreeData, TreeNode } from './types';
 
 const App = () => {
   const navigate = useNavigate();
@@ -12,70 +11,133 @@ const App = () => {
   const [tree, setTree] = useState<TreeNode>({
     id: 'root',
     number: 0,
-    children: []
+    children: [],
+    position: 'right', 
+    placement: 'vertical'
   });
 
-  
-
   const handleResultPage = async () => {
-    
     try {
-
-        // Send data to API
-        const response = await sendTreeData(tree);
-
-        // Navigation
-        console.log('Navigating to result page with:', {
-            treeData: tree,
-            apiResponse: response
+      const apiData: APITreeData = {};
+      
+      const convertToApiFormat = (node: TreeNode) => {
+        if (node.id === 'root') {
+          const sortedChildren = [...node.children].sort((a, b) => {
+            if (a.position === 'left' && b.position === 'right') return -1;
+            if (a.position === 'right' && b.position === 'left') return 1;
+            return 0;
+          });
+          
+          apiData[node.number] = sortedChildren.map(child => child.number);
+        } else {
+          const leftChildren = node.children.filter(child => child.position === 'left');
+          const rightChildren = node.children.filter(child => child.position === 'right');
+  
+          apiData[node.number] = [
+            leftChildren.length > 0 ? leftChildren[0].number : null,
+            rightChildren.length > 0 ? rightChildren[0].number : null
+          ];
+  
+          if (node.children.length === 0) {
+            apiData[node.number] = [];
+          }
+        }
+  
+        node.children.forEach(child => {
+          convertToApiFormat(child);
         });
-        
-        navigate('/result', { state: { treeData: tree, apiResponse: response } });
+      };
+      
+      convertToApiFormat(tree);
+      
+      const response = await sendTreeData(apiData, tree);
+      navigate('/result', { 
+        state: { 
+          treeData: tree, 
+          apiResponse: response,
+          apiFormat: apiData 
+        } 
+      });
     } catch (error) {
-        console.log(error)
+      console.error(error);
     }
-};
+  };
 
-  const handleAddChild = (parentId: string, number: number) => {
+  const handleAddChild = (parentId: string, number: number, position: 'left' | 'right', placement: 'horizontal' | 'vertical') => {
     const newNode: TreeNode = {
       id: Math.random().toString(36).substr(2, 9),
       number,
+      position,
+      placement,
       children: []
     };
-
-    const addChildToNode = (node: TreeNode): TreeNode => {
-      if (node.id === parentId) {
+  
+    setTree(prevTree => {
+      const addChildToNode = (node: TreeNode): TreeNode => {
+        if (node.id === parentId) {
+          const existingChildren = [...node.children];
+          const existingNumbers = new Set(existingChildren.map(child => child.number));
+          
+          if (existingNumbers.has(number)) {
+            alert('A node with this number already exists!');
+            return node;
+          }
+  
+          // Add new child maintaining position order
+          const updatedChildren = [...existingChildren];
+          if (position === 'left') {
+            // Find the rightmost left child or the start of right children
+            const insertIndex = updatedChildren.findIndex(child => child.position === 'right');
+            if (insertIndex === -1) {
+              updatedChildren.push(newNode);
+            } else {
+              updatedChildren.splice(insertIndex, 0, newNode);
+            }
+          } else {
+            updatedChildren.push(newNode);
+          }
+  
+          return {
+            ...node,
+            children: updatedChildren,
+          };
+        }
+  
         return {
           ...node,
-          children: [...node.children, newNode],
+          children: node.children.map(addChildToNode)
         };
-      }
-
-      return {
-        ...node,
-        children: node.children.map(addChildToNode)
       };
-    };
-
-    setTree(addChildToNode(tree));
+  
+      return addChildToNode(prevTree);
+    });
   };
 
-  const handleNodeNumberChange = (nodeId: string, number: number) => {
-    const updateNodeNumber = (node: TreeNode): TreeNode => {
-      if (node.id === nodeId) {
+
+  const handleNodeNumberChange = (nodeId: string, newNumber: number) => {
+    setTree(prevTree => {
+      const updateTree = (node: TreeNode): TreeNode => {
+        const hasNumberConflict = node.children.some(child => child.number === newNumber);
+        if (hasNumberConflict) {
+          alert('A node with this number already exists!');
+          return prevTree;
+        }
+  
+        if (node.id === nodeId) {
+          return {
+            ...node,
+            number: newNumber,
+          };
+        }
+  
         return {
           ...node,
-          number
+          children: node.children.map(updateTree)
         };
-      }
-
-      return {
-        ...node,
-        children: node.children.map(updateNodeNumber)
       };
-    };
-
-    setTree(updateNodeNumber(tree));
+  
+      return updateTree(prevTree);
+    });
   };
 
   return (
@@ -84,14 +146,14 @@ const App = () => {
         <div className="flex items-center justify-between mb-12">
           <div className="flex items-center gap-3">
             <Share2 className="w-8 h-8 text-blue-500" />
-            <h1 className="text-3xl font-bold text-gray-800">Crabritto Graph</h1>
+            <h1 className="text-3xl font-bold text-gray-800">Binary Tree Builder</h1>
           </div>
           <button
             onClick={handleResultPage}
             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors"
           >
             <Eye className="w-4 h-4" />
-            Ver Resultado
+            View Result
           </button>
         </div>
         

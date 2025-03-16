@@ -1,43 +1,12 @@
 import { ArrowLeft } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { TreeNode } from '../types';
+import { APITreeData } from '../types';
 
-const Result = () => {
+const ResultPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const treeData = location.state?.treeData;
   const apiResponse = location.state?.apiResponse;
-
-  const formatTreeStructure = (root: TreeNode): string => {
-    const structure: Record<number, number[]> = {};
-    
-    const traverse = (node: TreeNode) => {
-      if (!structure[node.number]) {
-        structure[node.number] = node.children.map(child => child.number);
-      }
-      node.children.forEach(child => traverse(child));
-    };
-  
-    traverse(root);
-  
-    const orderedEntries: [number, number[]][] = [[root.number, structure[root.number] || []]];
-    
-    Object.entries(structure).forEach(([key, value]) => {
-      const nodeNumber = Number(key);
-      if (nodeNumber !== root.number) {
-        orderedEntries.push([nodeNumber, value]);
-      }
-    });
-  
-    const formattedStructure = orderedEntries
-      .map(([number, children]) => {
-        const childrenStr = children.length ? children.join(', ') : '';
-        return `    ${number}: [${childrenStr}]`;
-      })
-      .join(',\n');
-  
-    return `{\n${formattedStructure}\n}`;
-  };
+  const apiFormat = location.state?.apiFormat as APITreeData;
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
@@ -54,16 +23,16 @@ const Result = () => {
         
         <div className="bg-white rounded-xl shadow-lg p-12 space-y-6">
           <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
-            <h2 className="text-xl font-semibold text-blue-800 mb-2">API Response:</h2>
+            <h2 className="text-xl font-semibold text-blue-800 mb-2">API Format:</h2>
             <pre className="text-lg font-mono whitespace-pre-wrap">
-              {apiResponse ? JSON.stringify(apiResponse, null, 2) : 'No response available'}
+              {JSON.stringify(apiFormat, null, 2)}
             </pre>
           </div>
 
           <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-800 mb-2">Tree Structure:</h2>
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">API Response:</h2>
             <pre className="text-lg font-mono whitespace-pre-wrap">
-              {treeData ? formatTreeStructure(treeData) : 'No data available'}
+              {apiResponse ? JSON.stringify(apiResponse, null, 2) : 'No response available'}
             </pre>
           </div>
         </div>
@@ -72,4 +41,4 @@ const Result = () => {
   );
 };
 
-export default Result;
+export default ResultPage;
