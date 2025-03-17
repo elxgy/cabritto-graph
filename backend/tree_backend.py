@@ -5,13 +5,6 @@ matplotlib.use('Agg')
 import os
 from copy import deepcopy
 
-aaa_list = {
-    10: [20, 30,40],
-    20: [],
-    30: [None, 15],
-    40: [],
-    15: []
-}
 
 def binary_tree_check(adj_list):
     for node, children in adj_list.items():
@@ -369,5 +362,3 @@ def identify_tree(adj_list):
         plt.close(fig)
     
     return result
-
-identify_tree(aaa_list)
