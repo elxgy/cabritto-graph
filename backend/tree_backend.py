@@ -84,20 +84,31 @@ class NaryTreeNode:
         self.value = value
         self.children = children if children is not None else []
 
-def build_nary_tree(adj_list, root_value):
-    # Check if the root_value is valid
-    if not root_value:
+def build_nary_tree(adj_list, root_value, visited=None):
+    # Initialize visited set on first call
+    if visited is None:
+        visited = set()
+    
+    # Check for cycles or invalid root
+    if not root_value or root_value in visited:
         return None
-    # Create the root node using the root_value
+        
+    # Add current node to visited set
+    visited.add(root_value)
+    
+    # Create the root node
     root = NaryTreeNode(root_value)
-    # Retrieve children of the root from adjacency list
+    
+    # Get children from adjacency list
     children = adj_list.get(root_value, [])
-
-    # Iterate through each child and recursively build the N-ary tree
+    
+    # Process each child, maintaining visited nodes
     for child in children:
-        root.children.append(build_nary_tree(adj_list, child))
-
-    # Returns the constructed tree
+        if child is not None and child not in visited:
+            child_node = build_nary_tree(adj_list, child, visited)
+            if child_node:
+                root.children.append(child_node)
+    
     return root
 
 
@@ -128,33 +139,39 @@ ax.axis('off')  # Hide axes
 
 
 # Function that uses the build_nary_tree function to create a image of the tree
+# Update the plot_nary_tree function to better handle multiple children
 def plot_nary_tree(node, x, y, dx, dy, ax):
     if node is None:
         return
 
-    # Plot the current node
+    # Plot current node
     ax.text(x, y, str(node.value), fontsize=12, ha='center', va='center',
             bbox=dict(facecolor='white', edgecolor='black', boxstyle='circle'))
 
-    # Plot edges to children
+    # Calculate spacing for children
     num_children = len(node.children)
     if num_children > 0:
-        # Calculate the x-coordinates for children
-        x_start = x - (num_children - 1) * dx / 2
+        # Adjust spacing based on number of children
+        total_width = (num_children - 1) * dx
+        x_start = x - total_width / 2
+        
+        # Plot each child with adjusted spacing
         for i, child in enumerate(node.children):
             if child is None:
                 continue
             x_child = x_start + i * dx
             y_child = y - dy
-            ax.plot([x, x_child], [y, y_child], 'k-')  # Draw a line to the child
-            plot_nary_tree(child, x_child, y_child, dx / num_children, dy, ax)
-
+            
+            # Draw connection line
+            ax.plot([x, x_child], [y, y_child], 'k-')
+            
+            # Recursively plot child subtree with adjusted spacing
+            plot_nary_tree(child, x_child, y_child, dx * 0.8, dy, ax)
 
 fig, ax = plt.subplots(figsize=(16, 12))  # Increase figsize for a bigger plot
 ax.set_xlim(-5, 5)
 ax.set_ylim(-5, 1)
 ax.axis('off')  # Hide axes
-
 
 
 def binary_tree_height(adj_list, root):
