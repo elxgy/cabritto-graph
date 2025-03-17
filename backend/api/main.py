@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 import sys
 import os
@@ -40,6 +40,18 @@ def create_tree():
 
     except Exception as e:
         print("Error:", str(e))
+        print("Traceback:", traceback.format_exc())
+        return jsonify({
+            'error': str(e),
+            'traceback': traceback.format_exc()
+        }), 500
+        
+@app.route('/static/images/<path:filename>')
+def serve_image(filename):
+    try:
+        return send_from_directory('../static/images', filename)
+    except Exception as e:
+        print("Error serving image:", str(e))
         print("Traceback:", traceback.format_exc())
         return jsonify({
             'error': str(e),
