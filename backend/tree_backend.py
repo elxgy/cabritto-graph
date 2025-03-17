@@ -1,6 +1,17 @@
 import matplotlib.pyplot as plt
 from collections import deque
+import matplotlib
+matplotlib.use('Agg')
+import os
+from copy import deepcopy
 
+aaa_list = {
+    10: [20, 30,40],
+    20: [],
+    30: [None, 15],
+    40: [],
+    15: []
+}
 
 def binary_tree_check(adj_list):
     for node, children in adj_list.items():
@@ -138,6 +149,8 @@ def plot_nary_tree(node, x, y, dx, dy, ax):
         # Calculate the x-coordinates for children
         x_start = x - (num_children - 1) * dx / 2
         for i, child in enumerate(node.children):
+            if child is None:
+                continue
             x_child = x_start + i * dx
             y_child = y - dy
             ax.plot([x, x_child], [y, y_child], 'k-')  # Draw a line to the child
@@ -275,10 +288,6 @@ def inorder_traversal(adj_list, root):
     return result
 
 def identify_tree(adj_list):
-    import matplotlib
-    matplotlib.use('Agg')
-    import os
-    from copy import deepcopy
 
     images_dir = os.path.join(os.path.dirname(__file__), 'static', 'images')
     os.makedirs(images_dir, exist_ok=True)
@@ -360,3 +369,5 @@ def identify_tree(adj_list):
         plt.close(fig)
     
     return result
+
+identify_tree(aaa_list)
