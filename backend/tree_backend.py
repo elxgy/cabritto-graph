@@ -66,22 +66,6 @@ def build_binary_tree(adj_list, root_value):
 
     return root
 
-def plot_binary_tree(node, x, y, dx, dy, ax):
-    if node is None:
-        return
-
-    # Plot current node
-    ax.text(x, y, str(node.value), fontsize=12, ha='center', va='center',
-            bbox=dict(facecolor='white', edgecolor='black', boxstyle='circle'))
-
-    # Plot connections and children
-    if node.left:
-        ax.plot([x, x - dx], [y, y - dy], 'k-')
-        plot_binary_tree(node.left, x - dx, y - dy, dx / 2, dy, ax)
-
-    if node.right:
-        ax.plot([x, x + dx], [y, y - dy], 'k-')
-        plot_binary_tree(node.right, x + dx, y - dy, dx / 2, dy, ax)
 
 class NaryTreeNode:
     def __init__(self, value=0, children=None):
@@ -267,7 +251,6 @@ def inorder_traversal(adj_list, root):
 def identify_tree(adj_list):
     import matplotlib
     matplotlib.use('Agg')
-    import matplotlib.pyplot as plt
     import os
     from copy import deepcopy
 
