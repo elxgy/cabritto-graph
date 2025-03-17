@@ -10,7 +10,6 @@ def binary_tree_check(adj_list):
 
     return True
 
-'''tmj chineses parte 2'''
 def get_binary_root(adj_list):
     if not adj_list:
         return None
@@ -18,11 +17,11 @@ def get_binary_root(adj_list):
     # Create a set of all child nodes
     child_nodes = set()
     for children in adj_list.values():
-        child_nodes.update(child for child in children if child is not None)
+        child_nodes.update(child for child in children if child is not None) # Updates child_nodes with all the nodes that have a root node
 
     for node in adj_list:
         if node not in child_nodes:
-            return node
+            return node # Checks every node in the list and return the one that is not in the child_nodes set
 
     return None
 
@@ -32,60 +31,73 @@ def get_nary_root(adj_list):
 
     child_nodes = set()
     for children in adj_list.values():
-        child_nodes.update(children)
+        child_nodes.update(children)  # Adds every children nodes to the child_nodes set
 
     for node in adj_list:
         if node not in child_nodes:
-            return node
+            return node # Checks every node in the list and return the one that is not in the child_nodes set
+
     return None
 
 class BinaryTreeNode:
+    # Initialize a binary tree node with a value, left child, and right child
     def __init__(self, value=0, left=None, right=None):
+
         self.value = value
         self.left = left
         self.right = right
 
 def build_binary_tree(adj_list, root_value):
+    # Check if the root_value is valid and exists in the adjacency list
     if not root_value or root_value not in adj_list:
         return None
 
     # Create the root node
     root = BinaryTreeNode(root_value)
+    # Retrieve the children of the root node from the adjacency list
     children = adj_list.get(root_value, [])
 
     # Process children based on their position in the array
     if len(children) > 0:
-        # Left child (index 0)
+        # Left child is at index 0
         if children[0] is not None:
+            # Recursively builds the subtree
             root.left = build_binary_tree(adj_list, children[0])
     
     if len(children) > 1:
-        # Right child (index 1)
+        # Right child is at index 1
         if children[1] is not None:
+            # Recursively builds the subtree
             root.right = build_binary_tree(adj_list, children[1])
 
+    # Returns the constructed tree
     return root
 
 
 class NaryTreeNode:
+    # Initialize an N-ary tree node with a value and a list of children
     def __init__(self, value=0, children=None):
         self.value = value
         self.children = children if children is not None else []
 
 def build_nary_tree(adj_list, root_value):
+    # Check if the root_value is valid
     if not root_value:
         return None
-
+    # Create the root node using the root_value
     root = NaryTreeNode(root_value)
+    # Retrieve children of the root from adjacency list
     children = adj_list.get(root_value, [])
 
+    # Iterate through each child and recursively build the N-ary tree
     for child in children:
         root.children.append(build_nary_tree(adj_list, child))
 
+    # Returns the constructed tree
     return root
 
 
-'''todo o codigo de plotar foi feito pelo deepseek tmj chines'''
+# Function that uses the build_binary_tree function to create a image of the tree
 def plot_binary_tree(node, x, y, dx, dy, ax):
     if node is None:
         return
@@ -110,7 +122,8 @@ ax.set_xlim(-5, 5)
 ax.set_ylim(-5, 1)
 ax.axis('off')  # Hide axes
 
-'''VLW CHINESES 3!!!!!!'''
+
+# Function that uses the build_nary_tree function to create a image of the tree
 def plot_nary_tree(node, x, y, dx, dy, ax):
     if node is None:
         return
@@ -137,29 +150,42 @@ ax.set_ylim(-5, 1)
 ax.axis('off')  # Hide axes
 
 
+
 def binary_tree_height(adj_list, root):
+    # Base case: if the root is None, return -1 (height of an empty tree is -1)
     if root is None:
         return -1
 
+    # Retrieve the children of the current root from the adjacency list
     children = adj_list.get(root, [])
 
+    # Extract the left child (index 0) if it exists, otherwise set to None
     left_child = children[0] if len(children) > 0 else None
+    # Extract the right child (index 1) if it exists, otherwise set to None
     right_child = children[1] if len(children) > 1 else None
 
+    # Recursively calculate the height of the left subtree
+    left_height = binary_tree_height(adj_list, left_child)
+    # Recursively calculate the height of the right subtree
+    right_height = binary_tree_height(adj_list, right_child)
 
-    left_height = binary_tree_height(adj_list, left_child) #passes left side to the function
-    right_height = binary_tree_height(adj_list, right_child) #passes right side to the function
-
-
-    return max(left_height, right_height) + 1 #check which side has the bigger value and return
+    # Return the maximum height of the left or right subtree, plus 1 (for the current level)
+    return max(left_height, right_height) + 1
 
 def nary_tree_height(adj_list, root):
+    # Base case: if the root is None, return -1 (height of an empty tree is -1)
     if root is None:
         return -1
-    height = -1
-    for child in adj_list.get(root, []):
-        height = max(height, nary_tree_height(adj_list, child)) #passes through all node with children and get the path with highest length
 
+    # Initialize the height to -1
+    height = -1
+
+    # Iterate through all children of the current root
+    for child in adj_list.get(root, []):
+        # Recursively calculate the height of each child and keep track of the maximum height
+        height = max(height, nary_tree_height(adj_list, child))
+
+    # Return the maximum height found among all children, plus 1 (for the current level)
     return height + 1
 
 def full_binary_tree(adj_list, root):
