@@ -46,36 +46,44 @@ const App = () => {
   
   const handleResultPage = async () => {
     try {
-      const apiData: APITreeData = {};
-      
-      const convertToApiFormat = (node: TreeNode) => {
-        if (!apiData[node.number]) {
-          apiData[node.number] = [];
-        }
+        const apiData: APITreeData = {};
         
-        // Add all children numbers to the array
-        node.children.forEach(child => {
-          apiData[node.number].push(child.number);
+        const convertToApiFormat = (node: TreeNode) => {
+            if (!apiData[node.number]) {
+                apiData[node.number] = [];
+            }
+            
+            const sortedChildren = [...node.children].sort((a, b) => {
+                if (a.position === 'left' && b.position === 'right') return -1;
+                if (a.position === 'right' && b.position === 'left') return 1;
+                return 0;
+            });
+
+            if (sortedChildren.length > 0 && sortedChildren[0].position === 'right') {
+                apiData[node.number].push("None");
+            }
+
+            sortedChildren.forEach(child => {
+                apiData[node.number].push(child.number);
+            });
+
+            sortedChildren.forEach(convertToApiFormat);
+        };
+        
+        convertToApiFormat(tree);
+        
+        const response = await sendTreeData(apiData, tree);
+        navigate('/result', { 
+            state: { 
+                treeData: tree, 
+                apiResponse: response,
+                apiFormat: apiData 
+            } 
         });
-  
-        // Process children recursively
-        node.children.forEach(convertToApiFormat);
-      };
-      
-      convertToApiFormat(tree);
-      
-      const response = await sendTreeData(apiData, tree);
-      navigate('/result', { 
-        state: { 
-          treeData: tree, 
-          apiResponse: response,
-          apiFormat: apiData 
-        } 
-      });
     } catch (error) {
-      console.error(error);
+        console.error(error);
     }
-  };
+};
 
   const handleNodeNumberChange = (nodeId: string, newNumber: number) => {
     setTree(prevTree => {

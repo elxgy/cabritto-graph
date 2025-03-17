@@ -9,7 +9,14 @@ export const sendTreeData = async (treeData: APITreeData, rootNode: TreeNode) =>
 
         Object.entries(treeData).forEach(([key, value]) => {
             const numericKey = Number(key);
-            requestData.children[numericKey] = value;
+            const children = value;
+
+            if (!children || children.length === 0) {
+                requestData.children[numericKey] = [];
+                return;
+            }
+
+            requestData.children[numericKey] = children;
         });
 
         console.log('Sending formatted data to API:', requestData);
