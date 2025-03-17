@@ -257,13 +257,13 @@ def complete_binary_tree(adj_list, root):
 
 def tree_type(adj_list, root):
     if full_binary_tree(adj_list, root):
-        return "Arvore cheia"
+        return "Árvore cheia"
 
     elif complete_binary_tree(adj_list, root):
-        return "Arvore completa"
+        return "Árvore completa"
 
     else:
-        return "Arvore incompleta"
+        return "Árvore incompleta"
 
 def preorder_traversal(adj_list, root):
     if root is None:
@@ -337,7 +337,7 @@ def identify_tree(adj_list):
                 
                 result = {
                     "image": image_path,
-                    "type": "Arvore binaria",
+                    "type": "Árvore binária",
                     "height": f"A altura é {height}",
                     "tree_type": f"O tipo é {tree_type_result}",
                     "pre_order": pre_order,
@@ -369,7 +369,7 @@ def identify_tree(adj_list):
                 
                 result = {
                     "image": image_path,
-                    "type": "Arvore regular",
+                    "type": "Árvore regular",
                     "height": f"A altura é {height}",
                     "tree_type": f"O tipo é {tree_type_result}",
                     "pre_order": pre_order,

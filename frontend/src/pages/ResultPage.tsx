@@ -122,25 +122,25 @@ const ResultPage = () => {
           </div>
 
           <Accordion
-            title="Traversal Paths"
+            title="Caminhos"
             id="traversal"
             icon={<GitFork className="w-5 h-5 text-blue-500" />}
           >
             <div className="space-y-6">
               <TraversalPath
-                title="Pre-order Traversal"
+                title="Camino Pré-Ordem"
                 data={apiResponse.data.pre_order}
                 color="bg-blue-100 text-blue-800"
               />
               {apiResponse.data.in_order && (
                 <TraversalPath
-                  title="In-order Traversal"
+                  title="Caminho Em-Ordem"
                   data={apiResponse.data.in_order}
                   color="bg-green-100 text-green-800"
                 />
               )}
               <TraversalPath
-                title="Post-order Traversal"
+                title="Caminho Pós-Ordem"
                 data={apiResponse.data.post_order}
                 color="bg-purple-100 text-purple-800"
               />
@@ -148,7 +148,7 @@ const ResultPage = () => {
           </Accordion>
 
           <Accordion
-            title="Tree Properties"
+            title="Propriedades da Árvore"
             id="properties"
             icon={<Activity className="w-5 h-5 text-blue-500" />}
           >
@@ -157,15 +157,15 @@ const ResultPage = () => {
                 <h3 className="font-medium text-gray-700 mb-4">Tree Characteristics</h3>
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-600">Height:</span>
+                    <span className="text-gray-600">Altura:</span>
                     <span className="font-medium text-gray-900">{apiResponse.data.height.split('é')[1].trim()}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-600">Classification:</span>
+                    <span className="text-gray-600">Classificação:</span>
                     <span className="font-medium text-gray-900">{apiResponse.data.type}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-600">Structure:</span>
+                    <span className="text-gray-600">Estrutura:</span>
                     <span className="font-medium text-gray-900">
                       {apiResponse.data.tree_type.split('é')[1].trim()}
                     </span>
