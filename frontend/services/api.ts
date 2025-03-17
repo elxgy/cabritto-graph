@@ -2,35 +2,14 @@ import { APITreeData, TreeNode, TreeRequestData } from "../src/types";
 
 export const sendTreeData = async (treeData: APITreeData, rootNode: TreeNode) => {
     try {
-        // Build node positions map for reference
-        const nodePositions: Record<number, TreeNode> = {};
-        const processTree = (node: TreeNode) => {
-            nodePositions[node.number] = node;
-            node.children.forEach(processTree);
-        };
-
-        processTree(rootNode);
-
-        // Initialize request data
         const requestData: TreeRequestData = {
             root: rootNode.number,
             children: {}
         };
 
-        // Process each node and its children
         Object.entries(treeData).forEach(([key, value]) => {
             const numericKey = Number(key);
-            const node = nodePositions[numericKey];
-
-            // Initialize empty array if no children
-            if (!value || (Array.isArray(value) && value.length === 0)) {
-                requestData.children[numericKey] = [];
-                return;
-            }
-
-            // Get all children for this node
-            const children = node.children.map(child => child.number);
-            requestData.children[numericKey] = children;
+            requestData.children[numericKey] = value;
         });
 
         console.log('Sending formatted data to API:', requestData);

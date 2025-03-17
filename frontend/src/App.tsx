@@ -16,36 +16,50 @@ const App = () => {
     placement: 'vertical'
   });
 
+  const handleAddChild = (parentId: string, number: number, position: 'left' | 'right', placement: 'horizontal' | 'vertical') => {
+    setTree(prevTree => {
+      const addChildToNode = (node: TreeNode): TreeNode => {
+        if (node.id === parentId) {
+          const newNode: TreeNode = {
+            id: Math.random().toString(36).substr(2, 9),
+            number,
+            position,
+            placement,
+            children: []
+          };
+  
+          return {
+            ...node,
+            children: [...node.children, newNode]
+          };
+        }
+  
+        return {
+          ...node,
+          children: node.children.map(addChildToNode)
+        };
+      };
+  
+      return addChildToNode(prevTree);
+    });
+  };
+  
   const handleResultPage = async () => {
     try {
       const apiData: APITreeData = {};
       
       const convertToApiFormat = (node: TreeNode) => {
-        if (node.id === 'root') {
-          const sortedChildren = [...node.children].sort((a, b) => {
-            if (a.position === 'left' && b.position === 'right') return -1;
-            if (a.position === 'right' && b.position === 'left') return 1;
-            return 0;
-          });
-          
-          apiData[node.number] = sortedChildren.map(child => child.number);
-        } else {
-          const leftChildren = node.children.filter(child => child.position === 'left');
-          const rightChildren = node.children.filter(child => child.position === 'right');
-  
-          apiData[node.number] = [
-            leftChildren.length > 0 ? leftChildren[0].number : null,
-            rightChildren.length > 0 ? rightChildren[0].number : null
-          ];
-  
-          if (node.children.length === 0) {
-            apiData[node.number] = [];
-          }
+        if (!apiData[node.number]) {
+          apiData[node.number] = [];
         }
-  
+        
+        // Add all children numbers to the array
         node.children.forEach(child => {
-          convertToApiFormat(child);
+          apiData[node.number].push(child.number);
         });
+  
+        // Process children recursively
+        node.children.forEach(convertToApiFormat);
       };
       
       convertToApiFormat(tree);
@@ -62,57 +76,6 @@ const App = () => {
       console.error(error);
     }
   };
-
-  const handleAddChild = (parentId: string, number: number, position: 'left' | 'right', placement: 'horizontal' | 'vertical') => {
-    const newNode: TreeNode = {
-      id: Math.random().toString(36).substr(2, 9),
-      number,
-      position,
-      placement,
-      children: []
-    };
-  
-    setTree(prevTree => {
-      const addChildToNode = (node: TreeNode): TreeNode => {
-        if (node.id === parentId) {
-          const existingChildren = [...node.children];
-          const existingNumbers = new Set(existingChildren.map(child => child.number));
-          
-          if (existingNumbers.has(number)) {
-            alert('A node with this number already exists!');
-            return node;
-          }
-  
-          // Add new child maintaining position order
-          const updatedChildren = [...existingChildren];
-          if (position === 'left') {
-            // Find the rightmost left child or the start of right children
-            const insertIndex = updatedChildren.findIndex(child => child.position === 'right');
-            if (insertIndex === -1) {
-              updatedChildren.push(newNode);
-            } else {
-              updatedChildren.splice(insertIndex, 0, newNode);
-            }
-          } else {
-            updatedChildren.push(newNode);
-          }
-  
-          return {
-            ...node,
-            children: updatedChildren,
-          };
-        }
-  
-        return {
-          ...node,
-          children: node.children.map(addChildToNode)
-        };
-      };
-  
-      return addChildToNode(prevTree);
-    });
-  };
-
 
   const handleNodeNumberChange = (nodeId: string, newNumber: number) => {
     setTree(prevTree => {
@@ -146,7 +109,7 @@ const App = () => {
         <div className="flex items-center justify-between mb-12">
           <div className="flex items-center gap-3">
             <Share2 className="w-8 h-8 text-blue-500" />
-            <h1 className="text-3xl font-bold text-gray-800">Binary Tree Builder</h1>
+            <h1 className="text-3xl font-bold text-gray-800">Tree Builder</h1>
           </div>
           <button
             onClick={handleResultPage}
