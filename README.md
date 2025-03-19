@@ -214,13 +214,6 @@ Retrieves the generated tree visualization image.
 
 #### Implementation Notes
 
-- The server automatically cleans up old image files when generating new ones
-- Only one tree visualization is stored at a time to conserve space
+- Remember to delete images and containers after using it or it will waste space on your machine
 
-## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
