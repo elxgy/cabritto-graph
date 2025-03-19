@@ -214,4 +214,18 @@ Retrieves the generated tree visualization image.
 
 - Remember to delete images and containers after using it or it will waste space on your machine
 
+## Contributors
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/yuuhLKT">
+        <img src="https://github.com/yuuhLKT.png" width="100px;" alt=""/>
+        <br />
+        <sub><b>Contributor Name</b></sub>
+      </a>
+    </td>
+    <!-- Repeat for each contributor -->
+  </tr>
+</table>
 
