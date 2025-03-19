@@ -220,7 +220,7 @@ Retrieves the generated tree visualization image.
   <tr>
     <td align="center">
       <a href="https://github.com/yuuhLKT">
-        <img src="https://github.com/yuuhLKT.png" width="100px;" height="100px;" style="border-radius:50%;" alt=""/>
+        <img src="https://github.com/yuuhLKT.png" width="100px;" style="border-radius:50%;" alt=""/>
         <br />
         <sub><b>YuuhLKT</b></sub>
       </a>
