@@ -12,7 +12,6 @@ A tool that allows users to construct tree structures visually and analyzes them
 - [Usage](#usage)
 - [API Documentation](#api-documentation)
 - [Contributing](#contributing)
-- [License](#license)
 
 ## Overview
 
@@ -214,7 +213,7 @@ Retrieves the generated tree visualization image.
 
 - Remember to delete images and containers after using it or it will waste space on your machine
 
-## Contributors
+## Frontend dev
 
 <table>
   <tr>
