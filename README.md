@@ -1,7 +1,5 @@
 # cabritto-graph
 
-# Tree Structure Analyzer
-
 A tool that allows users to construct tree structures visually and analyzes them, providing information about tree traversals and tree type.
 
 ## 📝 Table of Contents
