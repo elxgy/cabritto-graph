@@ -11,7 +11,7 @@ A tool that allows users to construct tree structures visually and analyzes them
 - [Installation](#installation)
 - [Usage](#usage)
 - [API Documentation](#api-documentation)
-- [Contributing](#contributing)
+- [Partner](#fontend-dev)
 
 ## Overview
 
@@ -213,7 +213,7 @@ Retrieves the generated tree visualization image.
 
 - Remember to delete images and containers after using it or it will waste space on your machine
 
-## Frontend dev
+## Frontend-dev
 
 <table>
   <tr>
