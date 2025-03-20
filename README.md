@@ -11,7 +11,7 @@ A tool that allows users to construct tree structures visually and analyzes them
 - [Installation](#installation)
 - [Usage](#usage)
 - [API Documentation](#api-documentation)
-- [Frontend-dev](#fontend-dev)
+- [Frontend-dev](#Frontend-dev)
 
 ## Overview
 
