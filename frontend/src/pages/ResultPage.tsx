@@ -82,7 +82,7 @@ const ResultPage = () => {
             className="text-blue-500 hover:text-blue-600 flex items-center gap-2 mx-auto"
           >
             <ArrowLeft className="w-4 h-4" />
-            Return to Tree Builder
+              Retorne para o construtor de árvores
           </button>
         </div>
       </div>
@@ -99,14 +99,14 @@ const ResultPage = () => {
           >
             <ArrowLeft className="w-6 h-6 text-gray-600" />
           </button>
-          <h1 className="text-3xl font-bold text-gray-800">Tree Analysis</h1>
+          <h1 className="text-3xl font-bold text-gray-800">Dados sobre a árvore</h1>
         </div>
 
         <div className="bg-white rounded-xl shadow-lg p-12 space-y-6">
           <div className="space-y-4">
             <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
               <Share2 className="w-6 h-6 text-blue-500" />
-              Tree Visualization
+              Visualize sua árvore
             </h2>
             <div className="h-[600px] bg-gray-50 rounded-lg flex items-center justify-center p-8 border-2 border-dashed border-gray-200">
               {imageUrl ? (

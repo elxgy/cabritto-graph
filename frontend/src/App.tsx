@@ -117,14 +117,14 @@ const App = () => {
         <div className="flex items-center justify-between mb-12">
           <div className="flex items-center gap-3">
             <Share2 className="w-8 h-8 text-blue-500" />
-            <h1 className="text-3xl font-bold text-gray-800">Tree Builder</h1>
+            <h1 className="text-3xl font-bold text-gray-800">Construtor de Árvores</h1>
           </div>
           <button
             onClick={handleResultPage}
             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors"
           >
             <Eye className="w-4 h-4" />
-            View Result
+            Veja o resultado
           </button>
         </div>
         
