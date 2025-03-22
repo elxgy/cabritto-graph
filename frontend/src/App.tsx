@@ -16,10 +16,32 @@ const App = () => {
     placement: 'vertical'
   });
 
-  const handleAddChild = (parentId: string, number: number, position: 'left' | 'right', placement: 'horizontal' | 'vertical') => {
+  const handleAddChild = (
+    parentId: string, 
+    number: number, 
+    position: 'left' | 'right', 
+    placement: 'horizontal' | 'vertical'
+  ) => {
     setTree(prevTree => {
+      // Verifica se o número do novo filho é igual ao da raiz principal
+      if (number === prevTree.number) {
+        alert('O número do filho não pode ser igual ao número da raiz');
+        return prevTree;
+      }
+    
       const addChildToNode = (node: TreeNode): TreeNode => {
         if (node.id === parentId) {
+          // Verifica se o número do novo filho é igual ao número do pai
+          if (number === node.number) {
+            alert('O número do filho não pode ser igual ao número do pai');
+            return node;
+          }
+          // Verifica se o pai já possui um filho com esse número
+          if (node.children.some(child => child.number === number)) {
+            alert('Não é possível adicionar dois filhos iguais ao mesmo pai');
+            return node;
+          }
+    
           const newNode: TreeNode = {
             id: Math.random().toString(36).substr(2, 9),
             number,
@@ -27,19 +49,19 @@ const App = () => {
             placement,
             children: []
           };
-  
+    
           return {
             ...node,
             children: [...node.children, newNode]
           };
         }
-  
+    
         return {
           ...node,
           children: node.children.map(addChildToNode)
         };
       };
-  
+    
       return addChildToNode(prevTree);
     });
   };
