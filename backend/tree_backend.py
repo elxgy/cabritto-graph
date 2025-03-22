@@ -53,24 +53,24 @@ class BinaryTreeNode:
 
 def build_binary_tree(adj_list, root_value, path=None):
     if path is None:
-        path = set()
+        path = []
     # Se root_value for inválido ou inexistente, retorne None
     if not root_value or root_value not in adj_list:
         return None
-    # Se o nó já estiver no caminho atual, temos um ciclo
-    if root_value in path:
-        return None
 
-    path.add(root_value)
+    # Se o nó já estiver no caminho atual, este é um ciclo – cria o nó mas não recursa
+    if root_value in path:
+        return BinaryTreeNode(root_value)
+
+    new_path = path + [root_value]
     root = BinaryTreeNode(root_value)
     children = adj_list.get(root_value, [])
     if len(children) > 0:
         if children[0] is not None:
-            root.left = build_binary_tree(adj_list, children[0], path)
+            root.left = build_binary_tree(adj_list, children[0], new_path)
     if len(children) > 1:
         if children[1] is not None:
-            root.right = build_binary_tree(adj_list, children[1], path)
-    path.remove(root_value)
+            root.right = build_binary_tree(adj_list, children[1], new_path)
     return root
 
 class NaryTreeNode:
