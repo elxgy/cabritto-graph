@@ -199,18 +199,38 @@ def nary_tree_height(adj_list, root, visited=None):
 
 
 def full_binary_tree(adj_list, root):
-    if root is None:
-        return True
+    def check_leaf_levels(node, current_depth, leaf_levels):
+        if node is None:
+            return True
 
-    children = adj_list.get(root, [])
+        children = adj_list.get(node, [])
 
-    left_child = children[0] if len(children) > 0 else None
-    right_child = children[1] if len(children) > 1 else None
+        # If it's a leaf node, record its depth
+        if len(children) == 0:
+            leaf_levels.append(current_depth)
+            return True
 
-    if (left_child is None and right_child is not None) or (left_child is not None and right_child is None):
-        return False
+        # If it's not a leaf node, it must have exactly 2 children
+        if len(children) != 2:
+            return False
 
-    return full_binary_tree(adj_list, left_child) and full_binary_tree(adj_list, right_child)
+        # Recursively check left and right children
+        left_child = children[0]
+        right_child = children[1]
+        return (
+            check_leaf_levels(left_child, current_depth + 1, leaf_levels) and
+            check_leaf_levels(right_child, current_depth + 1, leaf_levels)
+        )
+
+    # Track the depths of all leaf nodes
+    leaf_levels = []
+    is_full_binary = check_leaf_levels(root, 0, leaf_levels)
+
+    # Check if all leaf nodes are at the same level
+    if is_full_binary and leaf_levels:
+        first_leaf_level = leaf_levels[0]
+        return all(level == first_leaf_level for level in leaf_levels)
+    return False
 
 
 def complete_binary_tree(adj_list, root):
@@ -225,17 +245,25 @@ def complete_binary_tree(adj_list, root):
         children = adj_list.get(node, [])
 
         left_child = children[0] if len(children) > 0 else None
+        right_child = children[1] if len(children) > 1 else None
+
+        # If a null child has been encountered before, but the current node has children,
+        # the tree is incomplete.
+        if has_null_child and (left_child or right_child):
+            return False
+
+        # If the left child is missing but the right child exists, the tree is incomplete.
+        if left_child is None and right_child is not None:
+            return False
+
+        # Add left child to the queue if it exists
         if left_child:
-            if has_null_child:
-                return False
             queue.append(left_child)
         else:
             has_null_child = True
 
-        right_child = children[1] if len(children) > 1 else None
+        # Add right child to the queue if it exists
         if right_child:
-            if has_null_child:
-                return False
             queue.append(right_child)
         else:
             has_null_child = True
