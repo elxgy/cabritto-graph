@@ -51,32 +51,27 @@ class BinaryTreeNode:
         self.left = left
         self.right = right
 
-def build_binary_tree(adj_list, root_value):
-    # Check if the root_value is valid and exists in the adjacency list
+def build_binary_tree(adj_list, root_value, path=None):
+    if path is None:
+        path = set()
+    # Se root_value for inválido ou inexistente, retorne None
     if not root_value or root_value not in adj_list:
         return None
+    # Se o nó já estiver no caminho atual, temos um ciclo
+    if root_value in path:
+        return None
 
-    # Create the root node
+    path.add(root_value)
     root = BinaryTreeNode(root_value)
-    # Retrieve the children of the root node from the adjacency list
     children = adj_list.get(root_value, [])
-
-    # Process children based on their position in the array
     if len(children) > 0:
-        # Left child is at index 0
         if children[0] is not None:
-            # Recursively builds the subtree
-            root.left = build_binary_tree(adj_list, children[0])
-    
+            root.left = build_binary_tree(adj_list, children[0], path)
     if len(children) > 1:
-        # Right child is at index 1
         if children[1] is not None:
-            # Recursively builds the subtree
-            root.right = build_binary_tree(adj_list, children[1])
-
-    # Returns the constructed tree
+            root.right = build_binary_tree(adj_list, children[1], path)
+    path.remove(root_value)
     return root
-
 
 class NaryTreeNode:
     # Initialize an N-ary tree node with a value and a list of children
@@ -84,31 +79,23 @@ class NaryTreeNode:
         self.value = value
         self.children = children if children is not None else []
 
-def build_nary_tree(adj_list, root_value, visited=None):
-    # Initialize visited set on first call
-    if visited is None:
-        visited = set()
-    
-    # Check for cycles or invalid root
-    if not root_value or root_value in visited:
+def build_nary_tree(adj_list, root_value, path=None):
+    if path is None:
+        path = set()
+    if not root_value or root_value not in adj_list:
         return None
-        
-    # Add current node to visited set
-    visited.add(root_value)
-    
-    # Create the root node
+    if root_value in path:
+        return None
+
+    path.add(root_value)
     root = NaryTreeNode(root_value)
-    
-    # Get children from adjacency list
     children = adj_list.get(root_value, [])
-    
-    # Process each child, maintaining visited nodes
     for child in children:
-        if child is not None and child not in visited:
-            child_node = build_nary_tree(adj_list, child, visited)
-            if child_node:
-                root.children.append(child_node)
-    
+        # Note que permitimos que ocorram duplicatas em ramos diferentes, pois usamos somente o caminho atual
+        child_node = build_nary_tree(adj_list, child, path) if child is not None else None
+        if child_node is not None:
+            root.children.append(child_node)
+    path.remove(root_value)
     return root
 
 
@@ -174,41 +161,40 @@ ax.set_ylim(-5, 1)
 ax.axis('off')  # Hide axes
 
 
-def binary_tree_height(adj_list, root):
-    # Base case: if the root is None, return -1 (height of an empty tree is -1)
+def binary_tree_height(adj_list, root, visited=None):
     if root is None:
         return -1
-
-    # Retrieve the children of the current root from the adjacency list
+    if visited is None:
+        visited = set()
+    if root in visited:
+        return -1
+    visited.add(root)
+    
     children = adj_list.get(root, [])
-
-    # Extract the left child (index 0) if it exists, otherwise set to None
     left_child = children[0] if len(children) > 0 else None
-    # Extract the right child (index 1) if it exists, otherwise set to None
     right_child = children[1] if len(children) > 1 else None
-
-    # Recursively calculate the height of the left subtree
-    left_height = binary_tree_height(adj_list, left_child)
-    # Recursively calculate the height of the right subtree
-    right_height = binary_tree_height(adj_list, right_child)
-
-    # Return the maximum height of the left or right subtree, plus 1 (for the current level)
+    
+    left_height = binary_tree_height(adj_list, left_child, visited)
+    right_height = binary_tree_height(adj_list, right_child, visited)
+    
+    visited.remove(root)
     return max(left_height, right_height) + 1
 
-def nary_tree_height(adj_list, root):
-    # Base case: if the root is None, return -1 (height of an empty tree is -1)
+def nary_tree_height(adj_list, root, visited=None):
+    if visited is None:
+        visited = set()
     if root is None:
         return -1
-
-    # Initialize the height to -1
+    if root in visited:
+        # Ciclo detectado: interrompe a recursão para esse ramo
+        return -1
+    visited.add(root)
+    
     height = -1
-
-    # Iterate through all children of the current root
     for child in adj_list.get(root, []):
-        # Recursively calculate the height of each child and keep track of the maximum height
-        height = max(height, nary_tree_height(adj_list, child))
-
-    # Return the maximum height found among all children, plus 1 (for the current level)
+        height = max(height, nary_tree_height(adj_list, child, visited))
+    
+    visited.remove(root)  # Backtracking para permitir outros ramos
     return height + 1
 
 def full_binary_tree(adj_list, root):
@@ -265,36 +251,59 @@ def tree_type(adj_list, root):
     else:
         return "Árvore incompleta"
 
-def preorder_traversal(adj_list, root):
+def preorder_traversal(adj_list, root, visited=None):
+    if visited is None:
+        visited = set()
     if root is None:
         return []
+    # Se o nó já foi visitado, interrompa esse ramo para evitar ciclo
+    if root in visited:
+        return []
+    visited.add(root)
     result = [root]
     for child in adj_list.get(root, []):
-        result.extend(preorder_traversal(adj_list, child))
+        result.extend(preorder_traversal(adj_list, child, visited))
+    visited.remove(root)  # Backtracking
     return result
 
-def postorder_traversal(adj_list, root):
+def postorder_traversal(adj_list, root, visited=None):
+    if visited is None:
+        visited = set()
     if root is None:
         return []
+    # Se o nó já foi visitado, retorne lista vazia para evitar ciclo
+    if root in visited:
+        return []
+    visited.add(root)
     result = []
     for child in adj_list.get(root, []):
-        result.extend(postorder_traversal(adj_list, child))
+        result.extend(postorder_traversal(adj_list, child, visited))
+    visited.remove(root)  # backtracking para liberar o nó para outros ramos
     return result + [root]
 
-def inorder_traversal(adj_list, root):
+def inorder_traversal(adj_list, root, visited=None):
+    if visited is None:
+        visited = set()
     if root is None:
         return []
+    if root in visited:
+        return []
+    visited.add(root)
+    
     result = []
     children = adj_list.get(root, [])
-
+    
+    # Processa o primeiro filho (se existir)
     if len(children) > 0:
-        result.extend(inorder_traversal(adj_list, children[0]))
-
+        result.extend(inorder_traversal(adj_list, children[0], visited))
+    
     result.append(root)
-
+    
+    # Processa o segundo filho (se existir)
     if len(children) > 1:
-        result.extend(inorder_traversal(adj_list, children[1]))
-
+        result.extend(inorder_traversal(adj_list, children[1], visited))
+    
+    visited.remove(root)  # Backtracking permite que o nó seja processado em outro ramo se necessário
     return result
 
 def identify_tree(adj_list):
@@ -334,6 +343,7 @@ def identify_tree(adj_list):
                 post_order = postorder_traversal(working_adj_list, root_value)
                 pre_order = preorder_traversal(working_adj_list, root_value)
                 in_order = inorder_traversal(working_adj_list, root_value)
+                root_node = build_binary_tree(working_adj_list, root_value)
                 
                 result = {
                     "image": image_path,
