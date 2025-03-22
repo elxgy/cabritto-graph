@@ -5,12 +5,6 @@ matplotlib.use('Agg')
 import os
 from copy import deepcopy
 
-'''matplotlib image settings'''
-fig, ax = plt.subplots(figsize=(16, 12))  # Increase figsize for a bigger plot
-ax.set_xlim(-6, 6)
-ax.set_ylim(-6, 1)
-ax.axis('off')  # Hide axes
-
 
 def binary_tree_check(adj_list):
     for node, children in adj_list.items():
