@@ -37,6 +37,7 @@ export const sendTreeData = async (treeData: APITreeData, rootNode: TreeNode) =>
         return await response.json();
     } catch (error) {
         console.error('Error sending tree data:', error);
+        alert('Erro ao enviar dados da árvore. Verifique o console para mais informações.');
         throw error;
     }
 };

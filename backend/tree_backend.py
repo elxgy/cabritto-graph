@@ -85,13 +85,12 @@ def build_nary_tree(adj_list, root_value, path=None):
     if not root_value or root_value not in adj_list:
         return None
     if root_value in path:
-        return None
-
+        # Instead of aborting, return a leaf node with the same value.
+        return NaryTreeNode(root_value, children=[])
     path.add(root_value)
     root = NaryTreeNode(root_value)
     children = adj_list.get(root_value, [])
     for child in children:
-        # Note que permitimos que ocorram duplicatas em ramos diferentes, pois usamos somente o caminho atual
         child_node = build_nary_tree(adj_list, child, path) if child is not None else None
         if child_node is not None:
             root.children.append(child_node)
