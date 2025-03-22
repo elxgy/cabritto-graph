@@ -7,6 +7,7 @@ const ResultPage = () => {
   const navigate = useNavigate();
   const apiResponse = location.state?.apiResponse;
   const [imageUrl, setImageUrl] = useState<string>('');
+  const [downloadUrl, setDownloadUrl] = useState<string>('');
 
   const [openSection, setOpenSection] = useState<string | null>('traversal');
 
@@ -15,6 +16,8 @@ const ResultPage = () => {
       const filename = apiResponse.data.image.split('\\').pop();
       setImageUrl(`http://localhost:5000/static/images/${filename}`);
     }
+    // Define a URL para download do TXT (o mesmo nome que você usou para salvar, ex: "tree.txt")
+    setDownloadUrl(`http://localhost:5000/static/trees/tree.txt`);
   }, [apiResponse]);
 
   const toggleSection = (section: string) => {
@@ -82,7 +85,7 @@ const ResultPage = () => {
             className="text-blue-500 hover:text-blue-600 flex items-center gap-2 mx-auto"
           >
             <ArrowLeft className="w-4 h-4" />
-              Retorne para o construtor de árvores
+            Retorne para o construtor de árvores
           </button>
         </div>
       </div>
@@ -119,6 +122,16 @@ const ResultPage = () => {
                 <div className="text-gray-400">No image available</div>
               )}
             </div>
+          </div>
+
+          <div className="flex justify-end">
+            <a
+              href={downloadUrl}
+              download="tree.txt"
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              Download TXT
+            </a>
           </div>
 
           <Accordion
