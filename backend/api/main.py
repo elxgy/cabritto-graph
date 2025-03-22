@@ -33,11 +33,8 @@ def create_tree():
         if not request_data:
             return jsonify({'error': 'No tree data provided'}), 400
 
-        # Se o JSON recebido estiver no formato { "root": ..., "children": { ... } },
-        # extraia apenas a parte da árvore (children)
         tree_to_save = request_data.get('children', request_data)
     
-        # Salva o JSON recebido (apenas a árvore) como TXT na pasta static/trees
         trees_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static', 'trees')
         os.makedirs(trees_dir, exist_ok=True)
         txt_file_path = os.path.join(trees_dir, 'tree.txt')
