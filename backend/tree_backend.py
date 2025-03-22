@@ -251,59 +251,53 @@ def tree_type(adj_list, root):
     else:
         return "Árvore incompleta"
 
-def preorder_traversal(adj_list, root, visited=None):
-    if visited is None:
-        visited = set()
+def preorder_traversal(adj_list, root, current_path=None):
     if root is None:
         return []
-    # Se o nó já foi visitado, interrompa esse ramo para evitar ciclo
-    if root in visited:
-        return []
-    visited.add(root)
+    if current_path is None:
+        current_path = set()
+    # Se o nó já estiver no caminho atual, retorne ele (para registrar a repetição) e interrompa a recursão
+    if root in current_path:
+        return [root]
+    new_path = current_path | {root}
     result = [root]
     for child in adj_list.get(root, []):
-        result.extend(preorder_traversal(adj_list, child, visited))
-    visited.remove(root)  # Backtracking
+        result.extend(preorder_traversal(adj_list, child, new_path))
     return result
 
-def postorder_traversal(adj_list, root, visited=None):
-    if visited is None:
-        visited = set()
+def postorder_traversal(adj_list, root, current_path=None):
     if root is None:
         return []
-    # Se o nó já foi visitado, retorne lista vazia para evitar ciclo
-    if root in visited:
-        return []
-    visited.add(root)
+    if current_path is None:
+        current_path = set()
+    if root in current_path:
+        return [root]
+    new_path = current_path | {root}
     result = []
     for child in adj_list.get(root, []):
-        result.extend(postorder_traversal(adj_list, child, visited))
-    visited.remove(root)  # backtracking para liberar o nó para outros ramos
+        result.extend(postorder_traversal(adj_list, child, new_path))
     return result + [root]
 
-def inorder_traversal(adj_list, root, visited=None):
-    if visited is None:
-        visited = set()
+def inorder_traversal(adj_list, root, current_path=None):
     if root is None:
         return []
-    if root in visited:
-        return []
-    visited.add(root)
+    if current_path is None:
+        current_path = set()
+    if root in current_path:
+        return [root]
+    new_path = current_path | {root}
     
     result = []
     children = adj_list.get(root, [])
     
-    # Processa o primeiro filho (se existir)
     if len(children) > 0:
-        result.extend(inorder_traversal(adj_list, children[0], visited))
+        result.extend(inorder_traversal(adj_list, children[0], new_path))
     
     result.append(root)
     
-    # Processa o segundo filho (se existir)
     if len(children) > 1:
-        result.extend(inorder_traversal(adj_list, children[1], visited))
+        result.extend(inorder_traversal(adj_list, children[1], new_path))
     
-    visited.remove(root)  # Backtracking permite que o nó seja processado em outro ramo se necessário
     return result
 
 def identify_tree(adj_list):
