@@ -68,12 +68,15 @@ def build_binary_tree(adj_list, root_value, path=None):
     new_path = path + [root_value]
     root = BinaryTreeNode(root_value)
     children = adj_list.get(root_value, [])
+
     if len(children) > 0:
         if children[0] is not None:
             root.left = build_binary_tree(adj_list, children[0], new_path)
+
     if len(children) > 1:
         if children[1] is not None:
             root.right = build_binary_tree(adj_list, children[1], new_path)
+
     return root
 
 
@@ -87,19 +90,25 @@ class NaryTreeNode:
 def build_nary_tree(adj_list, root_value, path=None):
     if path is None:
         path = set()
+
     if not root_value or root_value not in adj_list:
         return None
+
     if root_value in path:
         # Instead of aborting, return a leaf node with the same value.
         return NaryTreeNode(root_value, children=[])
+
     path.add(root_value)
     root = NaryTreeNode(root_value)
     children = adj_list.get(root_value, [])
+
     for child in children:
         child_node = build_nary_tree(adj_list, child, path) if child is not None else None
         if child_node is not None:
             root.children.append(child_node)
+
     path.remove(root_value)
+
     return root
 
 
@@ -285,41 +294,52 @@ def tree_type(adj_list, root):
 def preorder_traversal(adj_list, root, current_path=None):
     if root is None:
         return []
+
     if current_path is None:
         current_path = set()
     # Se o nó já estiver no caminho atual, retorne ele (para registrar a repetição) e interrompa a recursão
     if root in current_path:
         return [root]
+
     new_path = current_path | {root}
     result = [root]
+
     for child in adj_list.get(root, []):
         result.extend(preorder_traversal(adj_list, child, new_path))
+
     return result
 
 
 def postorder_traversal(adj_list, root, current_path=None):
     if root is None:
         return []
+
     if current_path is None:
         current_path = set()
+
     if root in current_path:
         return [root]
+
     new_path = current_path | {root}
     result = []
+
     for child in adj_list.get(root, []):
         result.extend(postorder_traversal(adj_list, child, new_path))
+
     return result + [root]
 
 
 def inorder_traversal(adj_list, root, current_path=None):
     if root is None:
         return []
+
     if current_path is None:
         current_path = set()
+
     if root in current_path:
         return [root]
-    new_path = current_path | {root}
 
+    new_path = current_path | {root}
     result = []
     children = adj_list.get(root, [])
 
