@@ -112,18 +112,18 @@ def plot_binary_tree(node, x, y, dx, dy, ax, depth=0):
         return
 
     ax.text(x, y, str(node.value), fontsize=14, ha='center', va='center',
-            bbox=dict(facecolor='white', edgecolor='black', boxstyle='circle,pad=0.8', lw=2))  # Increased pad and fontsize
+            bbox=dict(facecolor='white', edgecolor='black', boxstyle='circle,pad=0.8', lw=2))
 
     scaling_factor = 2.0
     adjusted_dx = dx / (scaling_factor ** depth)
 
     if node.left:
-        ax.plot([x, x - adjusted_dx], [y, y - dy], 'k-')  # Draw a line to the left child
-        plot_binary_tree(node.left, x - adjusted_dx, y - dy, dx, dy, ax, depth + 1)  # Recur for the left subtree
+        ax.plot([x, x - adjusted_dx], [y, y - dy], 'k-')
+        plot_binary_tree(node.left, x - adjusted_dx, y - dy, dx, dy, ax, depth + 1)
 
     if node.right:
-        ax.plot([x, x + adjusted_dx], [y, y - dy], 'k-')  # Draw a line to the right child
-        plot_binary_tree(node.right, x + adjusted_dx, y - dy, dx, dy, ax, depth + 1)  # Recur for the right subtree
+        ax.plot([x, x + adjusted_dx], [y, y - dy], 'k-')
+        plot_binary_tree(node.right, x + adjusted_dx, y - dy, dx, dy, ax, depth + 1)
 
 
 def plot_nary_tree(node, x, y, dx, dy, ax, depth=0):
@@ -131,7 +131,7 @@ def plot_nary_tree(node, x, y, dx, dy, ax, depth=0):
         return
 
     ax.text(x, y, str(node.value), fontsize=14, ha='center', va='center',
-            bbox=dict(facecolor='white', edgecolor='black', boxstyle='circle,pad=0.8', lw=2))  # Increased pad and fontsize
+            bbox=dict(facecolor='white', edgecolor='black', boxstyle='circle,pad=0.8', lw=2))
 
     num_children = len(node.children)
     if num_children > 0:
@@ -180,7 +180,7 @@ def full_binary_tree(adj_list, root):
 
         children = adj_list.get(node, [])
 
-        # If it's a leaf node, record its depth
+        # If leaf node, record depth
         if len(children) == 0:
             leaf_levels.append(current_depth)
             return True
@@ -198,7 +198,7 @@ def full_binary_tree(adj_list, root):
     leaf_levels = []
     is_full_binary = check_leaf_levels(root, 0, leaf_levels)
 
-    # Check if all leaf nodes are at the same level
+    # Check if all leaf nodes are at same level
     if is_full_binary and leaf_levels:
         first_leaf_level = leaf_levels[0]
         return all(level == first_leaf_level for level in leaf_levels)
