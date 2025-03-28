@@ -57,11 +57,10 @@ class BinaryTreeNode:
 def build_binary_tree(adj_list, root_value, path=None):
     if path is None:
         path = []
-    # Se root_value for inválido ou inexistente, retorne None
+
     if not root_value or root_value not in adj_list:
         return None
 
-    # Se o nó já estiver no caminho atual, este é um ciclo – cria o nó mas não recursa
     if root_value in path:
         return BinaryTreeNode(root_value)
 
@@ -169,42 +168,26 @@ def plot_nary_tree(node, x, y, dx, dy, ax, depth=0):
             plot_nary_tree(child, x_child, y_child, dx, dy, ax, depth + 1)
 
 
-def binary_tree_height(adj_list, root, visited=None):
+def binary_tree_height(root):
     if root is None:
         return -1
-    if visited is None:
-        visited = set()
-    if root in visited:
-        return -1
-    visited.add(root)
 
-    children = adj_list.get(root, [])
-    left_child = children[0] if len(children) > 0 else None
-    right_child = children[1] if len(children) > 1 else None
+    left_height = binary_tree_height(root.left)
+    right_height = binary_tree_height(root.right)
 
-    left_height = binary_tree_height(adj_list, left_child, visited)
-    right_height = binary_tree_height(adj_list, right_child, visited)
-
-    visited.remove(root)
     return max(left_height, right_height) + 1
 
 
-def nary_tree_height(adj_list, root, visited=None):
-    if visited is None:
-        visited = set()
+def nary_tree_height(root):
     if root is None:
         return -1
-    if root in visited:
-        # Ciclo detectado: interrompe a recursão para esse ramo
-        return -1
-    visited.add(root)
 
-    height = -1
-    for child in adj_list.get(root, []):
-        height = max(height, nary_tree_height(adj_list, child, visited))
+    max_height = -1
+    for child in root.children:
+        max_height = max(max_height, nary_tree_height(child))
 
-    visited.remove(root)  # Backtracking para permitir outros ramos
-    return height + 1
+    return max_height + 1
+
 
 
 def full_binary_tree(adj_list, root):
@@ -297,7 +280,7 @@ def preorder_traversal(adj_list, root, current_path=None):
 
     if current_path is None:
         current_path = set()
-    # Se o nó já estiver no caminho atual, retorne ele (para registrar a repetição) e interrompa a recursão
+
     if root in current_path:
         return [root]
 
@@ -385,7 +368,7 @@ def identify_tree(adj_list):
                     image_path = os.path.join(images_dir, 'bin_tree.png')
                     plt.savefig(image_path, dpi=300, bbox_inches='tight')
 
-                height = binary_tree_height(working_adj_list, root_value)
+                height = binary_tree_height(root_node)
                 tree_type_result = tree_type(working_adj_list, root_value)
                 post_order = postorder_traversal(working_adj_list, root_value)
                 pre_order = preorder_traversal(working_adj_list, root_value)
@@ -419,7 +402,7 @@ def identify_tree(adj_list):
                 image_path = os.path.join(images_dir, 'nary_tree.png')
                 plt.savefig(image_path, dpi=300, bbox_inches='tight')
 
-                height = nary_tree_height(working_adj_list, root_value)
+                height = nary_tree_height(root_node)
                 tree_type_result = tree_type(working_adj_list, root_value)
                 post_order = postorder_traversal(working_adj_list, root_value)
                 pre_order = preorder_traversal(working_adj_list, root_value)
