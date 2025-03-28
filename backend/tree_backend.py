@@ -9,7 +9,7 @@ from copy import deepcopy
 def binary_tree_check(adj_list):
     for node, children in adj_list.items():
 
-        if len(children) > 2:  # check if any node has more than 2 children
+        if len(children) > 2:
             return False
 
     return True
@@ -18,15 +18,13 @@ def get_binary_root(adj_list):
     if not adj_list:
         return None
 
-    # Create a set of all child nodes
     child_nodes = set()
     for children in adj_list.values():
-        child_nodes.update(child for child in children if
-                           child is not None)  # Updates child_nodes with all the nodes that have a root node
+        child_nodes.update(child for child in children if child is not None)
 
     for node in adj_list:
         if node not in child_nodes:
-            return node  # Checks every node in the list and return the one that is not in the child_nodes set
+            return node
 
     return None
 
@@ -37,17 +35,16 @@ def get_nary_root(adj_list):
 
     child_nodes = set()
     for children in adj_list.values():
-        child_nodes.update(children)  # Adds every children nodes to the child_nodes set
+        child_nodes.update(children)
 
     for node in adj_list:
         if node not in child_nodes:
-            return node  # Checks every node in the list and return the one that is not in the child_nodes set
+            return node
 
     return None
 
 
 class BinaryTreeNode:
-    # Initialize a binary tree node with a value, left child, and right child
     def __init__(self, value=0, left=None, right=None):
         self.value = value
         self.left = left
@@ -80,7 +77,6 @@ def build_binary_tree(adj_list, root_value, path=None):
 
 
 class NaryTreeNode:
-    # Initialize an N-ary tree node with a value and a list of children
     def __init__(self, value=0, children=None):
         self.value = value
         self.children = children if children is not None else []
@@ -111,60 +107,47 @@ def build_nary_tree(adj_list, root_value, path=None):
     return root
 
 
-# Function that uses the build_binary_tree function to create a image of the tree
 def plot_binary_tree(node, x, y, dx, dy, ax, depth=0):
     if node is None:
         return
 
-    # Plot the current node with a bigger circle
     ax.text(x, y, str(node.value), fontsize=14, ha='center', va='center',
             bbox=dict(facecolor='white', edgecolor='black', boxstyle='circle,pad=0.8', lw=2))  # Increased pad and fontsize
 
-    # Adjust horizontal spacing based on depth
-    scaling_factor = 2.0  # Increase this to reduce spacing further
+    scaling_factor = 2.0
     adjusted_dx = dx / (scaling_factor ** depth)
 
-    # Plot left child
     if node.left:
         ax.plot([x, x - adjusted_dx], [y, y - dy], 'k-')  # Draw a line to the left child
         plot_binary_tree(node.left, x - adjusted_dx, y - dy, dx, dy, ax, depth + 1)  # Recur for the left subtree
 
-    # Plot right child
     if node.right:
         ax.plot([x, x + adjusted_dx], [y, y - dy], 'k-')  # Draw a line to the right child
         plot_binary_tree(node.right, x + adjusted_dx, y - dy, dx, dy, ax, depth + 1)  # Recur for the right subtree
 
 
-# Function that uses the build_nary_tree function to create a image of the tree
-# Update the plot_nary_tree function to better handle multiple children
 def plot_nary_tree(node, x, y, dx, dy, ax, depth=0):
     if node is None:
         return
 
-    # Plot current node with a bigger circle
     ax.text(x, y, str(node.value), fontsize=14, ha='center', va='center',
             bbox=dict(facecolor='white', edgecolor='black', boxstyle='circle,pad=0.8', lw=2))  # Increased pad and fontsize
 
-    # Calculate spacing for children
     num_children = len(node.children)
     if num_children > 0:
-        # Adjust spacing based on depth and number of children
-        scaling_factor = 2.0  # Increase this to reduce spacing further
+        scaling_factor = 2.0
         adjusted_dx = dx / (scaling_factor ** depth)
         total_width = (num_children - 1) * adjusted_dx
         x_start = x - total_width / 2
 
-        # Plot each child with adjusted spacing
         for i, child in enumerate(node.children):
             if child is None:
                 continue
             x_child = x_start + i * adjusted_dx
             y_child = y - dy
 
-            # Draw connection line
             ax.plot([x, x_child], [y, y_child], 'k-')
 
-            # Recursively plot child subtree with adjusted spacing
             plot_nary_tree(child, x_child, y_child, dx, dy, ax, depth + 1)
 
 
@@ -202,11 +185,9 @@ def full_binary_tree(adj_list, root):
             leaf_levels.append(current_depth)
             return True
 
-        # If it's not a leaf node, it must have exactly 2 children
         if len(children) != 2:
             return False
 
-        # Recursively check left and right children
         left_child = children[0]
         right_child = children[1]
         return (
@@ -214,7 +195,6 @@ def full_binary_tree(adj_list, root):
             check_leaf_levels(right_child, current_depth + 1, leaf_levels)
         )
 
-    # Track the depths of all leaf nodes
     leaf_levels = []
     is_full_binary = check_leaf_levels(root, 0, leaf_levels)
 
@@ -239,22 +219,19 @@ def complete_binary_tree(adj_list, root):
         left_child = children[0] if len(children) > 0 else None
         right_child = children[1] if len(children) > 1 else None
 
-        # If a null child has been encountered before, but the current node has children,
-        # the tree is incomplete.
+        '''If a null child has been encountered before, but the current node has children,
+        the tree is incomplete'''
         if has_null_child and (left_child or right_child):
             return False
 
-        # If the left child is missing but the right child exists, the tree is incomplete.
         if left_child is None and right_child is not None:
             return False
 
-        # Add left child to the queue if it exists
         if left_child:
             queue.append(left_child)
         else:
             has_null_child = True
 
-        # Add right child to the queue if it exists
         if right_child:
             queue.append(right_child)
         else:
