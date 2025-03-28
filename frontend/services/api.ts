@@ -8,15 +8,13 @@ export const sendTreeData = async (treeData: APITreeData, rootNode: TreeNode) =>
         };
 
         Object.entries(treeData).forEach(([key, value]) => {
-            const numericKey = Number(key);
-            const children = value;
-
-            if (!children || children.length === 0) {
-                requestData.children[numericKey] = [];
-                return;
+            const parts = key.split('-');
+            let numericKey = Number(parts[0]);
+            if (isNaN(numericKey)) {
+                console.warn(`Chave ${key} não possui número válido. Usando 0 como fallback.`);
+                numericKey = 0;
             }
-
-            requestData.children[numericKey] = children;
+            requestData.children[numericKey] = value;
         });
 
         console.log('Sending formatted data to API:', requestData);

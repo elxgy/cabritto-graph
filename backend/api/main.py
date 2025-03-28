@@ -4,7 +4,7 @@ from flask_cors import CORS
 import sys
 import os
 import traceback
-import glob
+import glob 
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -48,9 +48,10 @@ def create_tree():
 
         for node, children in children_data.items():
             try:
-                node_key = int(node)
-            except ValueError:
-                print(f"Ignorando chave inválida: {node}")
+                # Aqui extraímos a parte numérica da chave composta
+                node_key = int(node.split('-')[0])
+            except Exception as e:
+                print(f"Ignorando chave inválida: {node}. Erro: {e}")
                 continue
 
             processed_children = []
@@ -96,7 +97,6 @@ def serve_image(filename):
             'traceback': traceback.format_exc()
         }), 500
 
-# Para servir o TXT salvo, adicione uma rota opcional:
 @app.route('/static/trees/<path:filename>')
 def serve_txt(filename):
     try:

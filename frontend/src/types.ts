@@ -9,10 +9,9 @@ export interface TreeNode {
 export interface TreeRequestData {
   root: number;
   children: {
-    [key: number]: (number | "None")[];
+    [key: string]: (number | "None")[];
   };
 }
-
 export interface APITreeData {
-  [key: number]: (number | "None")[];
+  [key: string]: (number | "None")[];
 }

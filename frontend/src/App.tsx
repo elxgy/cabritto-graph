@@ -11,6 +11,7 @@ const App = () => {
   const [fileContent, setFileContent] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
 
+  // Raiz inicial (0)
   const [tree, setTree] = useState<TreeNode>({
     id: 'root',
     number: 0,
@@ -19,6 +20,34 @@ const App = () => {
     placement: 'vertical'
   });
 
+  /**
+   * Localiza o nó de ID específico e também retorna seu pai (se houver).
+   * Retorna [foundNode, parentNode] ou [null, null] se não encontrar.
+   */
+  const findNodeAndParent = (
+    currentNode: TreeNode,
+    nodeId: string,
+    parentNode: TreeNode | null = null
+  ): [TreeNode | null, TreeNode | null] => {
+    if (currentNode.id === nodeId) {
+      return [currentNode, parentNode];
+    }
+    for (const child of currentNode.children) {
+      const [found, foundParent] = findNodeAndParent(child, nodeId, currentNode);
+      if (found) {
+        return [found, foundParent];
+      }
+    }
+    return [null, null];
+  };
+
+  /**
+   * Adiciona um novo filho ao nó (parentId).
+   * Permite duplicatas em outras partes da árvore, mas:
+   * - Não pode ser igual ao número da raiz.
+   * - Não pode ser igual ao número do pai.
+   * - Não pode ser igual ao de algum irmão.
+   */
   const handleAddChild = (
     parentId: string,
     number: number,
@@ -26,22 +55,28 @@ const App = () => {
     placement: 'horizontal' | 'vertical'
   ) => {
     setTree(prevTree => {
+      // Se o número for igual ao da raiz
       if (number === prevTree.number) {
         alert('O número do filho não pode ser igual ao número da raiz');
         return prevTree;
       }
 
+      // Função recursiva para inserir o novo nó no local correto
       const addChildToNode = (node: TreeNode): TreeNode => {
         if (node.id === parentId) {
+          // Se for igual ao número do pai
           if (number === node.number) {
             alert('O número do filho não pode ser igual ao número do pai');
             return node;
           }
+
+          // Se algum irmão tiver o mesmo número
           if (node.children.some(child => child.number === number)) {
-            alert('Não é possível adicionar dois filhos iguais ao mesmo pai');
+            alert('Não é possível adicionar dois filhos com o mesmo número ao mesmo pai');
             return node;
           }
 
+          // Tudo certo: cria o novo filho
           const newNode: TreeNode = {
             id: Math.random().toString(36).substr(2, 9),
             number,
@@ -56,6 +91,7 @@ const App = () => {
           };
         }
 
+        // Continua descendo na árvore
         return {
           ...node,
           children: node.children.map(addChildToNode)
@@ -66,6 +102,66 @@ const App = () => {
     });
   };
 
+  /**
+   * Edita o número de um nó existente.
+   * Permite duplicatas em outras partes da árvore, mas:
+   * - Não pode ser igual ao número da raiz.
+   * - Não pode ser igual ao número do pai.
+   * - Não pode ser igual ao de algum irmão.
+   */
+  const handleNodeNumberChange = (nodeId: string, newNumber: number) => {
+    setTree(prevTree => {
+      // Se for igual à raiz
+      if (newNumber === prevTree.number) {
+        alert('O número do nó não pode ser igual ao número da raiz');
+        return prevTree;
+      }
+
+      // Localiza o nó que vamos editar e seu pai
+      const [foundNode, parentNode] = findNodeAndParent(prevTree, nodeId);
+      if (!foundNode) {
+        console.warn('Nó não encontrado');
+        return prevTree;
+      }
+
+      // Se for igual ao número do pai
+      if (parentNode && parentNode.number === newNumber) {
+        alert('O número do nó não pode ser igual ao número do pai');
+        return prevTree;
+      }
+
+      // Se algum irmão tiver o mesmo número
+      if (
+        parentNode &&
+        parentNode.children.some(
+          child => child.id !== nodeId && child.number === newNumber
+        )
+      ) {
+        alert('Não pode ser igual ao número de um irmão');
+        return prevTree;
+      }
+
+      // Recursivamente atualiza o número do nó
+      const updateTree = (node: TreeNode): TreeNode => {
+        if (node.id === nodeId) {
+          return {
+            ...node,
+            number: newNumber
+          };
+        }
+        return {
+          ...node,
+          children: node.children.map(updateTree)
+        };
+      };
+
+      return updateTree(prevTree);
+    });
+  };
+
+  /**
+   * Lê arquivo .txt selecionado e armazena seu conteúdo.
+   */
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
@@ -78,9 +174,12 @@ const App = () => {
     }
   };
 
+  /**
+   * Envia o conteúdo do arquivo para a API.
+   */
   const handleFileSend = async () => {
     if (!fileContent) {
-      alert("Nenhum arquivo selecionado.");
+      alert('Nenhum arquivo selecionado.');
       return;
     }
     try {
@@ -96,33 +195,43 @@ const App = () => {
       });
       setShowTxtModal(false);
     } catch (error) {
-      console.error("Erro ao enviar arquivo:", error);
+      console.error('Erro ao enviar arquivo:', error);
     }
   };
 
+  /**
+   * Converte a árvore local para o formato esperado pela API e navega para a página de resultado.
+   * Usamos uma chave composta (number-id) para evitar colisões quando houver números repetidos.
+   */
   const handleResultPage = async () => {
     try {
       const apiData: APITreeData = {};
 
       const convertToApiFormat = (node: TreeNode) => {
-        if (!apiData[node.number]) {
-          apiData[node.number] = [];
+        // Usa uma chave composta para evitar conflitos
+        const key = `${node.number}-${node.id}`;
+        if (!apiData[key]) {
+          apiData[key] = [];
         }
 
+        // Ordena os filhos para manter a ordem left/right
         const sortedChildren = [...node.children].sort((a, b) => {
           if (a.position === 'left' && b.position === 'right') return -1;
           if (a.position === 'right' && b.position === 'left') return 1;
           return 0;
         });
 
+        // Se o primeiro filho for 'right', insere "None" na posição left
         if (sortedChildren.length > 0 && sortedChildren[0].position === 'right') {
-          apiData[node.number].push("None");
+          apiData[key].push('None');
         }
 
+        // Adiciona os números dos filhos
         sortedChildren.forEach(child => {
-          apiData[node.number].push(child.number);
+          apiData[key].push(child.number);
         });
 
+        // Processa recursivamente cada filho
         sortedChildren.forEach(convertToApiFormat);
       };
 
@@ -139,32 +248,6 @@ const App = () => {
     } catch (error) {
       console.error(error);
     }
-  };
-
-  const handleNodeNumberChange = (nodeId: string, newNumber: number) => {
-    setTree(prevTree => {
-      const updateTree = (node: TreeNode): TreeNode => {
-        const hasNumberConflict = node.children.some(child => child.number === newNumber);
-        if (hasNumberConflict) {
-          alert('A node with this number already exists!');
-          return prevTree;
-        }
-
-        if (node.id === nodeId) {
-          return {
-            ...node,
-            number: newNumber,
-          };
-        }
-
-        return {
-          ...node,
-          children: node.children.map(updateTree)
-        };
-      };
-
-      return updateTree(prevTree);
-    });
   };
 
   return (
@@ -213,7 +296,7 @@ const App = () => {
               {file ? (
                 <div className="flex flex-col items-center">
                   <p className="text-gray-700 font-medium text-center truncate max-w-full">
-                    {file.name.replace(/(\.txt)+$/i, ".txt")}
+                    {file.name.replace(/(\.txt)+$/i, '.txt')}
                   </p>
                   <button
                     onClick={() => {
@@ -242,7 +325,11 @@ const App = () => {
               <button
                 onClick={handleFileSend}
                 disabled={!fileContent}
-                className={`w-full px-4 py-2 font-semibold rounded-lg transition-all ${fileContent ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+                className={`w-full px-4 py-2 font-semibold rounded-lg transition-all ${
+                  fileContent
+                    ? 'bg-green-600 text-white hover:bg-green-700'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
               >
                 📤 Enviar
               </button>
