@@ -219,8 +219,6 @@ def complete_binary_tree(adj_list, root):
         left_child = children[0] if len(children) > 0 else None
         right_child = children[1] if len(children) > 1 else None
 
-        '''If a null child has been encountered before, but the current node has children,
-        the tree is incomplete'''
         if has_null_child and (left_child or right_child):
             return False
 
